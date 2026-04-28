@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="720.0" prefWidth="1028.0" style="-fx-background-color: #EDF2F7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.controller.MainController">
+<BorderPane prefHeight="720.0" prefWidth="1028.0" style="-fx-background-color: #EDF2F7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.view.FileView">
 
     <left>
         <VBox alignment="TOP_CENTER" prefWidth="70.0" spacing="25.0" style="-fx-background-color: #2D3748; -fx-background-radius: 0 20 20 0;" BorderPane.alignment="CENTER">
@@ -55,9 +55,9 @@
                         <Insets top="10.0" />
                      </padding>
                   </HBox>
-                        <TextField fx:id="searchField" maxWidth="478.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="459.0" promptText="Dosya adı yazın..." style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="searchField" maxWidth="545.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="545.0" promptText="Dosya adı yazın..." style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
 
-                        <HBox alignment="CENTER" prefHeight="36.0" prefWidth="299.0" spacing="5.0" style="-fx-background-color: #F7FAFC; -fx-background-radius: 10; -fx-padding: 3; -fx-border-color: #E2E8F0; -fx-border-radius: 10;">
+                        <HBox alignment="CENTER" prefHeight="36.0" prefWidth="279.0" spacing="5.0" style="-fx-background-color: #F7FAFC; -fx-background-radius: 10; -fx-padding: 3; -fx-border-color: #E2E8F0; -fx-border-radius: 10;">
                             <children>
                                 <fx:define>
                                     <ToggleGroup fx:id="filterGroup" />
@@ -90,31 +90,19 @@
                                 </ToggleButton>
                             </children>
                         </HBox>
-
-                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonClick" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: #3182CE; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;" text="ARA" />
                     </children>
                 </HBox>
 
-                <TableView fx:id="searchListView" maxWidth="923.0" prefHeight="594.0" prefWidth="923.0"
-                           style="-fx-background-color: white;
-                  -fx-background-radius: 15;
-                  -fx-border-color: transparent;
-                  -fx-selection-bar: #E2E8F0;
-                  -fx-selection-bar-non-focused: #EDF2F7;"
-                           VBox.vgrow="ALWAYS">
+                <TableView fx:id="searchListView" maxWidth="923.0" prefHeight="594.0" prefWidth="923.0" style="-fx-background-color: white;                   -fx-background-radius: 15;                   -fx-border-color: transparent;                   -fx-selection-bar: #E2E8F0;                   -fx-selection-bar-non-focused: #EDF2F7;" VBox.vgrow="ALWAYS">
 
                     <columns>
-                        <TableColumn fx:id="colFileName" minWidth="180.0"
-                                     style="-fx-alignment: CENTER_LEFT; -fx-font-size: 13px; -fx-text-fill: #2D3748;" text="Dosya Adı" />
+                        <TableColumn fx:id="colFileName" minWidth="180.0" style="-fx-alignment: CENTER_LEFT; -fx-font-size: 13px; -fx-text-fill: #2D3748;" text="Dosya Adı" />
 
-                        <TableColumn fx:id="colPath" minWidth="350.0"
-                                     style="-fx-alignment: CENTER_LEFT; -fx-font-size: 12px; -fx-text-fill: #718096;" text="Dosya Yolu" />
+                        <TableColumn fx:id="colPath" minWidth="350.0" style="-fx-alignment: CENTER_LEFT; -fx-font-size: 12px; -fx-text-fill: #718096;" text="Dosya Yolu" />
 
-                        <TableColumn fx:id="colSize" minWidth="120.0"
-                                     style="-fx-alignment: CENTER_RIGHT; -fx-font-size: 12px; -fx-text-fill: #4A5568;" text="Boyut" />
+                        <TableColumn fx:id="colSize" minWidth="120.0" style="-fx-alignment: CENTER_RIGHT; -fx-font-size: 12px; -fx-text-fill: #4A5568;" text="Boyut" />
 
-                        <TableColumn fx:id="colLastmodified" minWidth="180.0"
-                                     style="-fx-alignment: CENTER; -fx-font-size: 12px; -fx-text-fill: #4A5568;" text="Tarih" />
+                        <TableColumn fx:id="colLastmodified" minWidth="180.0" style="-fx-alignment: CENTER; -fx-font-size: 12px; -fx-text-fill: #4A5568;" text="Tarih" />
                     </columns>
 
                     <columnResizePolicy>

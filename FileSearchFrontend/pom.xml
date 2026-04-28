@@ -20,6 +20,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.17.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
+        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -92,7 +97,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.berkaykomur.filesearchfrontend/com.berkaykomur.filesearchfrontend.HelloApplication
+                                com.berkaykomur.filesearchfrontend/com.berkaykomur.filesearchfrontend.FileApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
