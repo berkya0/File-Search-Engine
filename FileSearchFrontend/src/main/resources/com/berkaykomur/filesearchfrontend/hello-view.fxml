@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="720.0" prefWidth="1028.0" style="-fx-background-color: #EDF2F7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.controller.MainController">
+
+    <left>
+        <VBox alignment="TOP_CENTER" prefWidth="70.0" spacing="25.0" style="-fx-background-color: #2D3748; -fx-background-radius: 0 20 20 0;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="40.0" />
+            </padding>
+            <children>
+                <Button mnemonicParsing="false" style="-fx-background-color: #4299E1; -fx-background-radius: 12; -fx-cursor: hand;" text="🏠" textFill="WHITE">
+                    <font> <Font size="20.0" /> </font>
+                    <padding> <Insets bottom="10.0" left="12.0" right="12.0" top="10.0" /> </padding>
+                </Button>
+                <Button mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" textFill="#A0AEC0">
+                    <font> <Font size="20.0" /> </font>
+               <graphic>
+                  <SVGPath content="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="#a0aec0" />
+               </graphic>
+                </Button>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox maxWidth="-Infinity" prefHeight="720.0" prefWidth="943.0" spacing="20.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+            </padding>
+            <children>
+
+                <HBox alignment="CENTER_LEFT" maxWidth="900.0" prefHeight="57.0" prefWidth="962.0" spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 20, 0, 0, 8);">
+                    <padding>
+                        <Insets bottom="10.0" left="20.0" right="12.0" top="10.0" />
+                    </padding>
+                    <children>
+                  <HBox prefHeight="36.0" prefWidth="13.0">
+                     <children>
+                        <SVGPath content="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                     </children>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                  </HBox>
+                        <TextField fx:id="searchField" maxWidth="478.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="459.0" promptText="Dosya adı yazın..." style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
+
+                        <HBox alignment="CENTER" prefHeight="36.0" prefWidth="299.0" spacing="5.0" style="-fx-background-color: #F7FAFC; -fx-background-radius: 10; -fx-padding: 3; -fx-border-color: #E2E8F0; -fx-border-radius: 10;">
+                            <children>
+                                <fx:define>
+                                    <ToggleGroup fx:id="filterGroup" />
+                                </fx:define>
+
+                                <ToggleButton fx:id="btnAll" mnemonicParsing="false" prefHeight="32.0" selected="true" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Tümü">
+                                    <graphic>
+                                        <SVGPath content="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4z" fill="#4A5568" scaleX="0.6" scaleY="0.6" />
+                                    </graphic>
+                           <toggleGroup>
+                              <ToggleGroup fx:id="filterGroup" />
+                           </toggleGroup>
+                                </ToggleButton>
+                                <ToggleButton fx:id="btnDoc" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Belge" toggleGroup="$filterGroup">
+                                    <graphic>
+                                        <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z" fill="#D69E2E" scaleX="0.6" scaleY="0.6" />
+                                    </graphic>
+                                </ToggleButton>
+
+                                <ToggleButton fx:id="btnImg" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Resim" toggleGroup="$filterGroup">
+                                    <graphic>
+                                        <SVGPath content="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" fill="#38A169" scaleX="0.6" scaleY="0.6" />
+                                    </graphic>
+                                </ToggleButton>
+
+                                <ToggleButton fx:id="btnCode" mnemonicParsing="false" prefHeight="28.0" prefWidth="55.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Kod" toggleGroup="$filterGroup">
+                                    <graphic>
+                                        <SVGPath content="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4z" fill="#E53E3E" scaleX="0.6" scaleY="0.6" />
+                                    </graphic>
+                                </ToggleButton>
+                            </children>
+                        </HBox>
+
+                        <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearchButtonClick" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: #3182CE; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;" text="ARA" />
+                    </children>
+                </HBox>
+
+                <TableView fx:id="searchListView" maxWidth="923.0" prefHeight="594.0" prefWidth="923.0"
+                           style="-fx-background-color: white;
+                  -fx-background-radius: 15;
+                  -fx-border-color: transparent;
+                  -fx-selection-bar: #E2E8F0;
+                  -fx-selection-bar-non-focused: #EDF2F7;"
+                           VBox.vgrow="ALWAYS">
+
+                    <columns>
+                        <TableColumn fx:id="colFileName" minWidth="180.0"
+                                     style="-fx-alignment: CENTER_LEFT; -fx-font-size: 13px; -fx-text-fill: #2D3748;" text="Dosya Adı" />
+
+                        <TableColumn fx:id="colPath" minWidth="350.0"
+                                     style="-fx-alignment: CENTER_LEFT; -fx-font-size: 12px; -fx-text-fill: #718096;" text="Dosya Yolu" />
+
+                        <TableColumn fx:id="colSize" minWidth="120.0"
+                                     style="-fx-alignment: CENTER_RIGHT; -fx-font-size: 12px; -fx-text-fill: #4A5568;" text="Boyut" />
+
+                        <TableColumn fx:id="colLastmodified" minWidth="180.0"
+                                     style="-fx-alignment: CENTER; -fx-font-size: 12px; -fx-text-fill: #4A5568;" text="Tarih" />
+                    </columns>
+
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
