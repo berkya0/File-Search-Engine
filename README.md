@@ -2,7 +2,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Geliştirme_Aşamasında-yellow)
 ![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-green)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-LTS-blue)
 
 ## 🎯 Projenin Amacı
