@@ -31,7 +31,6 @@ public class FileView {
 
     private final PauseTransition searchDebounce = new PauseTransition(Duration.millis(500));
     private final FileSearchService  fileSearchService = new FileSearchService();
-    private final ObservableList<FileDto> masterData = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -39,12 +38,14 @@ public class FileView {
         FileViewUtil.setupTableColumns(colFileName,colPath,colSize,colLastmodified);
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            searchDebounce.setOnFinished(event -> fileSearchService.fetchData(newValue));
+            searchDebounce.setOnFinished(event -> fileSearchService.startNewSearch(newValue));
             searchDebounce.playFromStart();
         });
 
-        searchListView.setItems(masterData);
-        fileSearchService.fetchData("");
+        searchListView.setItems(fileSearchService.getMasterData());
+        fileSearchService.startNewSearch(" ");
+
+        FileViewUtil.setupInfiniteScroll(searchListView,fileSearchService);
     }
 
 
