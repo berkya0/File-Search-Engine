@@ -2,16 +2,17 @@ package com.berkaykomur.filesearchbackend.mapper;
 
 import com.berkaykomur.filesearchbackend.dto.FileDto;
 import com.berkaykomur.filesearchbackend.model.FileEntity;
+import com.berkaykomur.filesearchbackend.util.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
+@Slf4j
 public class FileMapper {
     public static FileDto toDTO(FileEntity file) {
         if(file==null){return null;}
         FileDto fileDto = new FileDto();
-        fileDto.setId(file.getId());
         fileDto.setSize(file.getSize());
         fileDto.setName(file.getName());
         fileDto.setPath(file.getPath());
@@ -21,7 +22,6 @@ public class FileMapper {
     public static FileEntity toFile(FileDto fileDto) {
         if(fileDto==null){return null;}
         FileEntity file=new FileEntity();
-        file.setId(fileDto.getId());
         file.setName(fileDto.getName());
         file.setSize(fileDto.getSize());
         file.setPath(fileDto.getPath());
@@ -29,17 +29,30 @@ public class FileMapper {
         return file;
     }
 
-    public static FileEntity fromPathToFile(Path path) {
-        try{
-            FileEntity fileEntity=new FileEntity();
-            BasicFileAttributes attrs= Files.readAttributes(path, BasicFileAttributes.class);
+    public static FileEntity fromPathToFile(Path path, BasicFileAttributes attrs) {
+        try {
+            if (path == null) return null;
+
+            FileEntity fileEntity = new FileEntity();
             fileEntity.setPath(path.toString());
             fileEntity.setSize(attrs.size());
-            fileEntity.setName(path.getFileName().toString());
+
+            // GÜVENLİ İSİM ALMA
+            Path fileNamePath = path.getFileName();
+            if (fileNamePath != null) {
+                fileEntity.setName(fileNamePath.toString());
+            } else {
+                // Eğer root ise (C:\ gibi), path'in kendisini veya boş string setleyebilirsin
+                fileEntity.setName(path.toString());
+            }
+
+            fileEntity.setExtension(FileUtil.getExtension(path));
             fileEntity.setLastModified(attrs.lastModifiedTime().toMillis());
+
             return fileEntity;
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            // Logda e.getMessage() yerine e'yi direkt verirsen stacktrace'i görürsün
+            log.error("Dosyayı entitye çevirirken hata oluştu! Path: {}", path, e);
             return null;
         }
     }

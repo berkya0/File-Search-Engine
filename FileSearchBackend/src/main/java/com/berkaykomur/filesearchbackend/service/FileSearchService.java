@@ -1,6 +1,7 @@
 package com.berkaykomur.filesearchbackend.service;
 
 import com.berkaykomur.filesearchbackend.dto.FileDto;
+import com.berkaykomur.filesearchbackend.mapper.FileMapper;
 import com.berkaykomur.filesearchbackend.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +20,8 @@ public class FileSearchService {
 
     public Page<FileDto> searchFiles(String searchText,int page,int pageSize){
         Pageable pageable = PageRequest.of(page,pageSize, Sort.by("name").ascending());
+
         return fileRepository.findByNameContainingIgnoreCase(searchText, pageable)
-                .map(entity -> new FileDto(
-                        entity.getId(),
-                        entity.getName(),
-                        entity.getPath(),
-                        entity.getSize(),
-                        entity.getLastModified()
-                ));
+                .map(FileMapper::toDTO);
     }
 }

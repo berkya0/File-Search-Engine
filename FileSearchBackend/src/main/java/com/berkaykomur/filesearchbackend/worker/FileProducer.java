@@ -1,6 +1,8 @@
 package com.berkaykomur.filesearchbackend.worker;
 
+import com.berkaykomur.filesearchbackend.mapper.FileMapper;
 import com.berkaykomur.filesearchbackend.model.FileEntity;
+import com.berkaykomur.filesearchbackend.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,24 +36,15 @@ public class FileProducer {
                     return FileVisitResult.CONTINUE;
                 }
                 try {
-
-                    FileEntity fileEntity = new FileEntity();
-                    fileEntity.setName(file.getFileName().toString());
-                    fileEntity.setSize(attrs.size());
-                    fileEntity.setPath(file.toAbsolutePath().toString());
-                    fileEntity.setLastModified(attrs.lastModifiedTime().toMillis());
-                    fileQueue.put(fileEntity);
-
-                    String fileName = file.getFileName().toString().toLowerCase();
-                    int dotIndex = fileName.lastIndexOf('.');
-                    if (dotIndex > 0) {
-                        String extension = fileName.substring(dotIndex + 1);
-                        if (TEXT_EXTENSIONS.contains(extension)) {
-                            indexQueue.put(file);
-                        }
+                    FileEntity fileEntity = FileMapper.fromPathToFile(file,attrs);
+                    if(fileEntity!=null){
+                        fileQueue.put(fileEntity);
+                    }
+                    if (TEXT_EXTENSIONS.contains(FileUtil.getExtension(file))) {
+                        indexQueue.put(file);
                     }
                 } catch (Exception e) {
-                    log.error("Beklenemdik bir hata meydana geldi: {}", e.getMessage());
+                    log.error("Beklenemdik bir hata meydana geldi: {}",e);
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -65,7 +58,7 @@ public class FileProducer {
         log.info("Tarama işlemi tamamlandı bitiş sinyalleri için zehirli haplar gönderiliyor..");
 
         for (int i = 0; i < indexWorkerCount; i++) {
-            indexQueue.put(Path.of("__POSION__"));
+            indexQueue.put(POISON_PATH);
         }
 
         for (int i = 0; i < dbWorkerCount; i++) {

@@ -20,6 +20,7 @@ public class FileEntity {
     @Column(nullable = false, length = 1000,unique = true)
     private String path;
 
+    private String extension;
     private long lastModified;
     private Long size;
 

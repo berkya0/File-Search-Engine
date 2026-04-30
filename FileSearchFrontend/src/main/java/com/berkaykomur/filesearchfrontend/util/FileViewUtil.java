@@ -33,7 +33,6 @@ public class FileViewUtil {
         });
 
     }
-
     public static void setupInfiniteScroll(TableView<FileDto> searchListView, FileSearchService fileSearchService) {
         Platform.runLater(() -> {
             ScrollBar verticalBar = (ScrollBar) searchListView.lookup(".scroll-bar:vertical");

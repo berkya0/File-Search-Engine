@@ -10,9 +10,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FileDto {
-    private Long id;
+
     private String name;
     private String path;
+    private String extension;
     private long size;
     private long lastModified;
 
