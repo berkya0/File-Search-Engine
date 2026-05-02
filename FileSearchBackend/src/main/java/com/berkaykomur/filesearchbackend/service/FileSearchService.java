@@ -1,6 +1,7 @@
 package com.berkaykomur.filesearchbackend.service;
 
 import com.berkaykomur.filesearchbackend.dto.FileDto;
+import com.berkaykomur.filesearchbackend.dto.SearchRequest;
 import com.berkaykomur.filesearchbackend.mapper.FileMapper;
 import com.berkaykomur.filesearchbackend.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,21 @@ public class FileSearchService {
 
     private final FileRepository fileRepository;
 
-    public Page<FileDto> searchFiles(String searchText,int page,int pageSize){
-        Pageable pageable = PageRequest.of(page,pageSize, Sort.by("name").ascending());
+    public Page<FileDto> searchFiles(SearchRequest searchRequest) {
+        log.info("Dosya arama işlemi başlatıldı: [Kelime: {}, Kategoriler: {}]",
+                searchRequest.getFileName(), searchRequest.getExtensions());
 
-        return fileRepository.findByNameContainingIgnoreCase(searchText, pageable)
+        Pageable pageable = PageRequest.of(searchRequest.getPage(),25,
+                Sort.by("name").ascending());
+
+        long start = System.currentTimeMillis();
+        Page<FileDto> results=fileRepository.searchFiles
+                        (searchRequest.getFileName(),searchRequest.getExtensions(),pageable)
                 .map(FileMapper::toDTO);
+        long executionTime = System.currentTimeMillis() - start;
+        log.info("Arama başarılı. Sayfa: {}, Toplam Sonuç: {}, Süre: {}ms",
+                searchRequest.getPage(), results.getTotalElements(), executionTime);
+
+        return results;
     }
 }

@@ -1,6 +1,7 @@
 package com.berkaykomur.filesearchfrontend.service;
 
 import com.berkaykomur.filesearchfrontend.dto.FileDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Set;
+
 @Slf4j
 
 public class FileSearchService {
@@ -22,24 +25,24 @@ public class FileSearchService {
     private boolean isLoading = false;
     private String lastQuery = "";
 
-    public void startNewSearch(String query) {
+    public void startNewSearch(String query, Set<String> extensions) throws JsonProcessingException {
         this.lastQuery = query;
         this.currentPage = 0;
         this.masterData.clear();
-        loadPage(query, currentPage);
+        loadPage(query,extensions, currentPage);
     }
 
-    public void loadNextPage() {
+    public void loadNextPage( Set<String> extensions) throws JsonProcessingException {
         if (isLoading) return;
 
         this.currentPage++;
         log.info("Sonraki sayfa yükleniyor: {}", currentPage);
-        loadPage(lastQuery, currentPage);
+        loadPage(lastQuery,extensions, currentPage);
     }
 
-    private void loadPage(String query, int page) {
+    private void loadPage(String query,Set<String> extensions, int page) throws JsonProcessingException {
         isLoading = true;
-        apiService.searchFiles(query, page).thenAccept(jsonResponse -> {
+        apiService.searchFiles(query,extensions, page).thenAccept(jsonResponse -> {
             try {
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);
                 JsonNode contentNode = rootNode.get("content");

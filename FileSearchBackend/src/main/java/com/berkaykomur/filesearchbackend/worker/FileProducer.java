@@ -24,7 +24,7 @@ public class FileProducer {
     private final BlockingQueue<Path> indexQueue;
 
     private static final Path POISON_PATH = Path.of("__POSION__");
-    public static final String POISON_PILL_NAME = "___STOP_PROCESS___"; // Name="POISON" gibi setlenebilir
+    public static final String POISON_PILL_NAME = "___STOP_PROCESS___";
     private static final Set<String> TEXT_EXTENSIONS = Set.of("txt", "java", "log", "md");
 
     public void scanAndSaveAllFiles(Path root,int dbWorkerCount, int indexWorkerCount) throws IOException, InterruptedException {
@@ -44,7 +44,7 @@ public class FileProducer {
                         indexQueue.put(file);
                     }
                 } catch (Exception e) {
-                    log.error("Beklenemdik bir hata meydana geldi: {}",e);
+                    log.error("Beklenemdik bir hata meydana geldi: {}",e.getMessage());
                 }
                 return FileVisitResult.CONTINUE;
             }

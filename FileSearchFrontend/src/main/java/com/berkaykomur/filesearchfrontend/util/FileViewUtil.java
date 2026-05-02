@@ -2,13 +2,17 @@ package com.berkaykomur.filesearchfrontend.util;
 
 import com.berkaykomur.filesearchfrontend.dto.FileDto;
 import com.berkaykomur.filesearchfrontend.service.FileSearchService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Set;
+import java.util.function.Supplier;
+
+@Slf4j
 public class FileViewUtil {
 
     public static void setupTableColumns(
@@ -33,14 +37,19 @@ public class FileViewUtil {
         });
 
     }
-    public static void setupInfiniteScroll(TableView<FileDto> searchListView, FileSearchService fileSearchService) {
+    public static void setupInfiniteScroll(TableView<FileDto> searchListView,
+                                           FileSearchService fileSearchService,
+                                           Supplier<Set<String>> extensionsSupplier) {
         Platform.runLater(() -> {
             ScrollBar verticalBar = (ScrollBar) searchListView.lookup(".scroll-bar:vertical");
             if (verticalBar != null) {
                 verticalBar.valueProperty().addListener((obs, oldValue, newValue) -> {
-                    // Scrollbar %80 veya %90 aşağı indiğinde yeni veriyi çek
                     if (newValue.doubleValue() >= verticalBar.getMax() * 0.9) {
-                        fileSearchService.loadNextPage();
+                        try {
+                            fileSearchService.loadNextPage(extensionsSupplier.get());
+                        } catch (JsonProcessingException e) {
+                            log.error("Sayfa yüklenirken JSON hatası: {}", e.getMessage());
+                        }
                     }
                 });
             }

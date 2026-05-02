@@ -36,13 +36,10 @@ public class FileMapper {
             FileEntity fileEntity = new FileEntity();
             fileEntity.setPath(path.toString());
             fileEntity.setSize(attrs.size());
-
-            // GÜVENLİ İSİM ALMA
             Path fileNamePath = path.getFileName();
             if (fileNamePath != null) {
                 fileEntity.setName(fileNamePath.toString());
             } else {
-                // Eğer root ise (C:\ gibi), path'in kendisini veya boş string setleyebilirsin
                 fileEntity.setName(path.toString());
             }
 
@@ -51,7 +48,6 @@ public class FileMapper {
 
             return fileEntity;
         } catch (Exception e) {
-            // Logda e.getMessage() yerine e'yi direkt verirsen stacktrace'i görürsün
             log.error("Dosyayı entitye çevirirken hata oluştu! Path: {}", path, e);
             return null;
         }

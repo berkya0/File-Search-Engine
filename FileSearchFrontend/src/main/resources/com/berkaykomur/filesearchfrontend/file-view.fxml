@@ -55,14 +55,16 @@
                         <Insets top="10.0" />
                      </padding>
                   </HBox>
-                        <TextField fx:id="searchField" maxWidth="545.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="545.0" promptText="Dosya adı yazın..." style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="searchField" maxWidth="545.0" minWidth="-Infinity" prefHeight="30.0" prefWidth="390.0" promptText="Dosya adı yazın..." style="-fx-background-color: transparent; -fx-font-size: 14px;" HBox.hgrow="ALWAYS" />
 
-                        <HBox alignment="CENTER" prefHeight="36.0" prefWidth="279.0" spacing="5.0" style="-fx-background-color: #F7FAFC; -fx-background-radius: 10; -fx-padding: 3; -fx-border-color: #E2E8F0; -fx-border-radius: 10;">
+                        <HBox alignment="CENTER" prefHeight="36.0" prefWidth="421.0" spacing="5.0" style="-fx-background-color: #F7FAFC; -fx-background-radius: 10; -fx-padding: 3; -fx-border-color: #E2E8F0; -fx-border-radius: 10;">
                             <children>
                                 <fx:define>
+                                    <!-- Merkezi Grup Tanımı: Tüm butonlar buna bağlı olmalı -->
                                     <ToggleGroup fx:id="filterGroup" />
                                 </fx:define>
 
+                                <!-- Tümü Butonu -->
                                 <ToggleButton fx:id="btnAll" mnemonicParsing="false" prefHeight="32.0" selected="true" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Tümü">
                                     <graphic>
                                         <SVGPath content="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4z" fill="#4A5568" scaleX="0.6" scaleY="0.6" />
@@ -71,21 +73,37 @@
                               <ToggleGroup fx:id="filterGroup" />
                            </toggleGroup>
                                 </ToggleButton>
+
+                                <!-- Belge Butonu -->
                                 <ToggleButton fx:id="btnDoc" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Belge" toggleGroup="$filterGroup">
                                     <graphic>
                                         <SVGPath content="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6z" fill="#D69E2E" scaleX="0.6" scaleY="0.6" />
                                     </graphic>
                                 </ToggleButton>
 
+                                <!-- Resim Butonu -->
                                 <ToggleButton fx:id="btnImg" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Resim" toggleGroup="$filterGroup">
                                     <graphic>
                                         <SVGPath content="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" fill="#38A169" scaleX="0.6" scaleY="0.6" />
                                     </graphic>
                                 </ToggleButton>
 
-                                <ToggleButton fx:id="btnCode" mnemonicParsing="false" prefHeight="28.0" prefWidth="55.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Kod" toggleGroup="$filterGroup">
+                                <!-- Kod Butonu -->
+                                <ToggleButton fx:id="btnCode" mnemonicParsing="false" prefHeight="28.0" prefWidth="61.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Kod" toggleGroup="$filterGroup">
                                     <graphic>
                                         <SVGPath content="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4z" fill="#E53E3E" scaleX="0.6" scaleY="0.6" />
+                                    </graphic>
+                                </ToggleButton>
+                                <ToggleButton fx:id="btnVideo" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Video" toggleGroup="$filterGroup">
+                                    <graphic>
+                                        <SVGPath content="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" fill="#3182CE" scaleX="0.6" scaleY="0.6" />
+                                    </graphic>
+                                </ToggleButton>
+
+                                <!-- Müzik Butonu (Yeni) -->
+                                <ToggleButton fx:id="btnMusic" mnemonicParsing="false" prefHeight="32.0" style="-fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 11px; -fx-font-weight: bold;" text="Müzik" toggleGroup="$filterGroup">
+                                    <graphic>
+                                        <SVGPath content="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="#805AD5" scaleX="0.6" scaleY="0.6" />
                                     </graphic>
                                 </ToggleButton>
                             </children>
