@@ -2,6 +2,7 @@ package com.berkaykomur.filesearchbackend.service;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -32,6 +33,7 @@ import java.util.List;
 public class LuceneIndexService {
 
     private String indexPath=System.getProperty("user.home")+ File.separator+"fileSearchIndex";
+    @Getter
     private Directory directory;
     private StandardAnalyzer analyzer;
     private IndexWriter indexWriter;

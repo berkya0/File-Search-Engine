@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 
@@ -24,6 +25,11 @@ public class FileSearchService {
     private int currentPage = 0;
     private boolean isLoading = false;
     private String lastQuery = "";
+    private boolean searchInContentMode = false;
+
+    public void setSearchMode(boolean inContent) {
+        this.searchInContentMode = inContent;
+    }
 
     public void startNewSearch(String query, Set<String> extensions) throws JsonProcessingException {
         this.lastQuery = query;
@@ -42,7 +48,14 @@ public class FileSearchService {
 
     private void loadPage(String query,Set<String> extensions, int page) throws JsonProcessingException {
         isLoading = true;
-        apiService.searchFiles(query,extensions, page).thenAccept(jsonResponse -> {
+        CompletableFuture<String> future;
+        if (searchInContentMode) {
+            future = apiService.searchInContent(query, page);
+        } else {
+
+            future = apiService.searchFiles(query, extensions, page);
+        }
+        future.thenAccept(jsonResponse -> {
             try {
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);
                 JsonNode contentNode = rootNode.get("content");

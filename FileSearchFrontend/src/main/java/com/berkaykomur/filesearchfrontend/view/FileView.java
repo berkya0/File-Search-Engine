@@ -21,6 +21,8 @@ public class FileView {
     @FXML private TableColumn<FileDto, String> colPath;
     @FXML private TableColumn<FileDto, String> colSize;
     @FXML private TableColumn<FileDto, String> colLastmodified;
+    @FXML private RadioButton rbContent;
+    @FXML private ToggleGroup searchModeGroup;
 
     @FXML private ToggleGroup filterGroup;
 
@@ -32,6 +34,16 @@ public class FileView {
         log.info("Frontend hazırlanıyor...");
         FileViewUtil.setupTableColumns(colFileName,colPath,colSize,colLastmodified);
 
+        searchModeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isContentSearch = (newVal == rbContent);
+            fileSearchService.setSearchMode(isContentSearch);
+
+            try {
+                fileSearchService.startNewSearch(searchField.getText(), getSelectedExtensions());
+            } catch (JsonProcessingException e) {
+                log.error("Mod değişimi hatası", e);
+            }
+        });
         filterGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 ToggleButton selectedBtn = (ToggleButton) newValue;
@@ -53,10 +65,17 @@ public class FileView {
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             searchDebounce.setOnFinished(event -> {
+                String currentText = searchField.getText().trim();
+
                 try {
-                    fileSearchService.startNewSearch(newValue,getSelectedExtensions());
+                    if (currentText.length() >= 3) {
+                        fileSearchService.startNewSearch(currentText, getSelectedExtensions());
+                    } else if (currentText.isEmpty()) {
+                        fileSearchService.startNewSearch("", getSelectedExtensions());
+                    }
+
                 } catch (JsonProcessingException e) {
-                    log.error("Json dönüştürme hatası: {}",e.getMessage());
+                    log.error("Arama tetiklenirken hata oluştu: {}", e.getMessage());
                 }
             });
             searchDebounce.playFromStart();

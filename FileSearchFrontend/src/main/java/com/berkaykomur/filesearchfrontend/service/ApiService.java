@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,6 +53,32 @@ public class ApiService {
                 .exceptionally(ex -> {
 
                     log.error("Sunucuya bağlanırken kritik hata oluştu: {}", ex.getMessage());
+                    return null;
+                });
+    }
+
+    public CompletableFuture<String> searchInContent(String query, int page) {
+        log.info("İçerikte arama isteği hazırlanıyor... Query: {}, Sayfa: {}", query, page);
+
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+        String url = BASE_URL + "/lucene?query=" + encodedQuery + "&page=" + page;
+
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200) {
+                        return response.body();
+                    } else {
+                        log.warn("Lucene araması hata döndürdü! Kod: {}", response.statusCode());
+                        return null;
+                    }
+                })
+                .exceptionally(ex -> {
+                    log.error("Lucene araması sırasında hata: {}", ex.getMessage());
                     return null;
                 });
     }

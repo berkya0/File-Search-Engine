@@ -3,14 +3,16 @@ package com.berkaykomur.filesearchbackend.controller;
 import com.berkaykomur.filesearchbackend.dto.FileDto;
 import com.berkaykomur.filesearchbackend.dto.SearchRequest;
 import com.berkaykomur.filesearchbackend.service.FileSearchService;
+import com.berkaykomur.filesearchbackend.service.LuceneSearchService;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.ser.jdk.JDKKeySerializers;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FileSearchController {
 
     private final FileSearchService fileSearchService;
+    private final LuceneSearchService luceneSearchService;
 
     @PostMapping
     public ResponseEntity<Page<FileDto>> fileSearch(@RequestBody SearchRequest request) {
@@ -32,5 +35,13 @@ public class FileSearchController {
 
         return ResponseEntity.ok(result);
 
+    }
+    @GetMapping("/lucene")
+    public ResponseEntity<Page<FileDto>> luceneSearch(@RequestParam String query,
+                                                      @RequestParam(defaultValue = "0") int page) {
+        log.info("İçerikte arama isteği atıldı query: {} page: {}", query,page);
+        Page<FileDto> files=luceneSearchService.luceneSearch(query,page);
+        log.info("içerikte arama işlemi başarıyla yanıtlandı.");
+        return ResponseEntity.ok(files);
     }
 }

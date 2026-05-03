@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -18,6 +19,10 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
             "(:extensions IS NULL OR f.extension IN :extensions)")
     Page<FileEntity> searchFiles(@Param("name") String name,
                                  @Param("extensions") Set<String> extensions, Pageable pageable);
+
+    List<FileEntity> findByPathIn(List<String> paths);
+
+
 
 
 
