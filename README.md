@@ -17,15 +17,25 @@ Bu proje, yerel disk üzerindeki milyonlarca dosya arasında **yüksek performan
 
 ---
 
+## 🚀 İlerleme Sonuçlarım
+
+- Toplam **1.3 milyon dosya** başarıyla veritabanına kaydedilmiş, aynı anda metin tabanlı dosyalar için **Apache Lucene tabanlı full-text indexing** işlemi gerçekleştirilmiştir.
+- Tüm tarama, kayıt ve indeksleme süreci yaklaşık **6 dakika** içerisinde tamamlanmıştır.
+- Frontend tarafındaki arama sistemi; dosya adı ve dosya uzantısına göre optimize edilmiş veritabanı indeksleri kullanmaktadır.
+- Kelime ortasından yapılan parçalı aramalarda dahi sonuçlar **100ms altı** sürede döndürülmektedir.
+- Büyük ölçekli veri üzerinde yüksek performanslı arama deneyimi hedeflenmiştir.
+
+---
+
 ## 🛠️ Geliştirme Aşamaları
 
 > **Not:** Aşağıdaki liste genel bir taslak olup, geliştirme sürecinde yeni özellikler eklenmeye devam edecektir.
 
-- [x] Backend çekirdek yapısının kurulması (Spring Boot 3.x)
+- [x] Backend çekirdek yapısının kurulması (Spring Boot 4.x)
 - [x] PostgreSQL veritabanı entegrasyonu ve veri modelleme
 - [x] Dosya indeksleme mantığının temel implementasyonu
 - [x] JavaFX ile temel seviye kullanıcı arayüzü (UI) tasarımı
-- [ ] **Multi-threading** ile tarama performansının maksimize edilmesi
+- [x] **Multi-threading** ile tarama performansının maksimize edilmesi
 - [ ] **WatchService** ile gerçek zamanlı dosya sistem takibi
 - [ ] Gelişmiş filtreleme (Dosya boyutu, uzantı, oluşturma tarihi vb.)
 - [ ] Küresel hata yakalama (Global Exception Handling)
