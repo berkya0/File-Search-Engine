@@ -43,6 +43,7 @@ Bu proje, yerel disk üzerindeki milyonlarca dosya arasında **yüksek performan
 
 ---
 
-## 👨‍💻 Geliştirici
+## 👨‍💻 Geliştirici 
+- **Berkay Kömür**
 - **Kırıkkale Üniversitesi** - Bilgisayar Mühendisliği Öğrencisi
-- [LinkedIn Profilin](https://www.linkedin.com/in/berkya)
+- [LinkedIn](https://www.linkedin.com/in/berkya)
