@@ -37,11 +37,13 @@ Bu proje, yerel disk üzerindeki milyonlarca dosya arasında **yüksek performan
 - [x] JavaFX ile temel seviye kullanıcı arayüzü (UI) tasarımı
 - [x] **Multi-threading** ile tarama performansının maksimize edilmesi
 - [ ] **WatchService** ile gerçek zamanlı dosya sistem takibi
+- [ ] **Delta scan** ile değişen dosyaların takibi
 - [ ] Gelişmiş filtreleme (Dosya boyutu, uzantı, oluşturma tarihi vb.)
 - [ ] Küresel hata yakalama (Global Exception Handling)
 
 ---
 
-## 👨‍💻 Geliştirici
+## 👨‍💻 Geliştirici 
+- **Berkay Kömür**
 - **Kırıkkale Üniversitesi** - Bilgisayar Mühendisliği Öğrencisi
-- [LinkedIn Profilin](https://www.linkedin.com/in/berkya)
+- [LinkedIn](https://www.linkedin.com/in/berkya)
