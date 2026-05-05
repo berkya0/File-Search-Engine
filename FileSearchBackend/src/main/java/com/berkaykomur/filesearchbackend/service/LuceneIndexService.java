@@ -38,6 +38,7 @@ public class LuceneIndexService {
     private StandardAnalyzer analyzer;
     private IndexWriter indexWriter;
 
+    //bu yere sonradan tekrar bak
     public void updateIndexPath(String indexPath) throws IOException {
         this.indexPath=indexPath;
         init();
@@ -51,55 +52,43 @@ public class LuceneIndexService {
             Files.createDirectories(path);
         }
         this.directory = FSDirectory.open(path);
-        this.analyzer = new StandardAnalyzer();
+        log.info("Lucene directory hazırlandı {}",indexPath);
 
-        IndexWriterConfig config = new IndexWriterConfig(analyzer);
-        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-
-        this.indexWriter = new IndexWriter(directory, config);
-        log.info("Lucene IndexWriter başarıyla başlatıldı ve kilit alındı.");
     }
 
     public void buildIndex(List<String> filePaths) {
-        log.info("{} adet dosya indeksleniyor...", filePaths.size());
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
-        // Karakter hatalarını önlemek için decoder
-        CharsetDecoder decoder = Charset.forName("Windows-1254").newDecoder()
-                .onMalformedInput(CodingErrorAction.IGNORE)
-                .onUnmappableCharacter(CodingErrorAction.IGNORE);
+        try (IndexWriter writer = new IndexWriter(directory, config)) {
+            log.info("İndeksleme işlemi başlatıldı Toplam {} dosya işlenecek.", filePaths.size());
 
-        for (String filePath : filePaths) {
-            Path path = Paths.get(filePath);
-            if (!Files.exists(path)) continue;
+            CharsetDecoder decoder = Charset.forName("Windows-1254").newDecoder()
+                    .onMalformedInput(CodingErrorAction.IGNORE)
+                    .onUnmappableCharacter(CodingErrorAction.IGNORE);
 
-            Document document = new Document();
-            document.add(new StringField("path", filePath, Field.Store.YES));
+            for (String filePath : filePaths) {
+                Path path = Paths.get(filePath);
+                if (!Files.exists(path)) continue;
 
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(Files.newInputStream(path), decoder))) {
+                Document document = new Document();
+                document.add(new StringField("path", filePath, Field.Store.YES));
 
-                document.add(new TextField("content", reader));
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(Files.newInputStream(path), decoder))) {
+                    document.add(new TextField("content", reader));
 
-                // Birden fazla thread aynı anda buraya döküman gönderebilir.
-                indexWriter.updateDocument(new Term("path", filePath), document);
-
-            } catch (IOException e) {
-                log.warn("Dosya okunurken hata oluştu (atlandı): {} - Hata: {}", filePath, e.getMessage());
+                    writer.updateDocument(new Term("path", filePath), document);
+                } catch (IOException e) {
+                    log.warn("Dosya okunurken hata: {} - {}", filePath, e.getMessage());
+                }
             }
+            writer.commit();
+            log.info("Tarama bitti, indeksler kaydedildi.");
         }
-        try {
-            indexWriter.commit();
-        } catch (IOException e) {
-            log.error("Lucene commit hatası!", e);
-        }
-    }
-    @PreDestroy
-    public void close() throws IOException {
-        if (indexWriter != null && indexWriter.isOpen()) {
-            indexWriter.close();
-            log.info("Lucene IndexWriter güvenli bir şekilde kapatıldı.");
+        catch (IOException e) {
+            log.error("İndeksleme sırasında hata!", e);
         }
     }
-
-
 }

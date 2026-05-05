@@ -70,9 +70,8 @@ public class LuceneSearchService {
 
     private List<String> luceneResults(String query,int limit) {
         List<String> results = new ArrayList<>();
-        try{
-            Directory directory=indexService.getDirectory();
-            DirectoryReader reader=DirectoryReader.open(directory);
+        try( Directory directory=indexService.getDirectory();
+             DirectoryReader reader=DirectoryReader.open(directory)){
             IndexSearcher searcher=new IndexSearcher(reader);
 
             QueryParser parser=new QueryParser("content",new StandardAnalyzer());
@@ -84,16 +83,11 @@ public class LuceneSearchService {
                 Document document=searcher.doc(scoreDoc.doc);
                 results.add(document.get("path"));
             }
-            reader.close();
         }
         catch (Exception e){
             log.error("Lucene search ile arama yaparken bir hata oluştu: {}",e.getMessage());
         }
         return results;
     }
-
-
-
-
 
 }
