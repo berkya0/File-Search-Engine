@@ -6,21 +6,17 @@ import com.berkaykomur.filesearchbackend.model.FileEntity;
 import com.berkaykomur.filesearchbackend.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tr.TurkishAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.Directory;
+import org.apache.lucene.search.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +28,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class LuceneSearchService {
-    private final LuceneIndexService indexService;
     private final FileRepository fileRepository;
+    private final TurkishAnalyzer analyzer;
+    private final SearcherManager searcherManager;
 
     public Page<FileDto> luceneSearch(String query, int page) {
 
@@ -70,11 +67,11 @@ public class LuceneSearchService {
 
     private List<String> luceneResults(String query,int limit) {
         List<String> results = new ArrayList<>();
-        try( Directory directory=indexService.getDirectory();
-             DirectoryReader reader=DirectoryReader.open(directory)){
-            IndexSearcher searcher=new IndexSearcher(reader);
-
-            QueryParser parser=new QueryParser("content",new StandardAnalyzer());
+        IndexSearcher searcher = null;
+        try{
+            searcher = searcherManager.acquire();
+            QueryParser parser=new QueryParser("content",analyzer);
+            parser.setDefaultOperator(QueryParser.Operator.AND);
             Query luceneQuery=parser.parse(query);
 
             TopDocs topDocs=searcher.search(luceneQuery,limit);
@@ -86,6 +83,15 @@ public class LuceneSearchService {
         }
         catch (Exception e){
             log.error("Lucene search ile arama yaparken bir hata oluştu: {}",e.getMessage());
+        }
+        finally {
+            if (searcher != null) {
+                try {
+                    searcherManager.release(searcher);
+                } catch (IOException e) {
+                    log.error("Searcher release hatası", e);
+                }
+            }
         }
         return results;
     }

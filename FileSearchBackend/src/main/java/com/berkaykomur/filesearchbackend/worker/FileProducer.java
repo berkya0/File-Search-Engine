@@ -40,7 +40,8 @@ public class FileProducer {
                     if(fileEntity!=null){
                         fileQueue.put(fileEntity);
                     }
-                    if (TEXT_EXTENSIONS.contains(FileUtil.getExtension(file))) {
+                    String extension=FileUtil.getExtension(file);
+                    if (extension!=null&& TEXT_EXTENSIONS.contains(FileUtil.getExtension(file))) {
                         indexQueue.put(file);
                     }
                 } catch (Exception e) {

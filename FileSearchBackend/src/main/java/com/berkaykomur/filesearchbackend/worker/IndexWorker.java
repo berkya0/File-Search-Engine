@@ -33,6 +33,7 @@ public class IndexWorker {
                 if(path.getFileName().toString().equals(POSION.toString())) {
                     indexQueue.put(path);
                     log.info("Dosya sonuna gelindi. {}",path.getFileName());
+                    luceneIndexService.completeIndexing();
                     break;
                 }
                 if(!Files.isReadable(path) || !Files.isRegularFile(path)) {
