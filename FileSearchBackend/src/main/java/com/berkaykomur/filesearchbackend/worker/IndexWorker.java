@@ -3,7 +3,6 @@ package com.berkaykomur.filesearchbackend.worker;
 import com.berkaykomur.filesearchbackend.service.LuceneIndexService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
@@ -19,10 +18,9 @@ public class IndexWorker {
 
     private final BlockingQueue<Path> indexQueue;
     private final LuceneIndexService luceneIndexService;
-    private final Path POSION=Path.of("__POSION__");
+
     private final int BATCH_SIZE=1000;
 
-    @Async("taskExecutor")
     public void runIndex() {
         List<String> indexList=new ArrayList<>();
         log.info("Yeni bir thread çalışmaya başladı: {}", Thread.currentThread().getName());
@@ -30,21 +28,19 @@ public class IndexWorker {
         while (true) {
             try {
                 Path path=indexQueue.take();
-                if(path.getFileName().toString().equals(POSION.toString())) {
-                    indexQueue.put(path);
+                if(path.equals(FileProducer.IX_POISON)) {
                     log.info("Dosya sonuna gelindi. {}",path.getFileName());
-                    luceneIndexService.completeIndexing();
                     break;
                 }
                 if(!Files.isReadable(path) || !Files.isRegularFile(path)) {
                     log.error("Okunamıyor atlandı: {}", path);
                     continue;
                 }
+                indexList.add(path.toString());
                 if(indexList.size()>=BATCH_SIZE) {
                     luceneIndexService.buildIndex(indexList);
                     indexList.clear();
                 }
-                indexList.add(path.toString());
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

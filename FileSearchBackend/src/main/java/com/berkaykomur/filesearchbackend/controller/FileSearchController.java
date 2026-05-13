@@ -4,15 +4,11 @@ import com.berkaykomur.filesearchbackend.dto.FileDto;
 import com.berkaykomur.filesearchbackend.dto.SearchRequest;
 import com.berkaykomur.filesearchbackend.service.FileSearchService;
 import com.berkaykomur.filesearchbackend.service.LuceneSearchService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.ser.jdk.JDKKeySerializers;
-
-import java.util.List;
 
 @Slf4j
 @RestController

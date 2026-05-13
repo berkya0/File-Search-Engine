@@ -23,11 +23,11 @@ public class FileProducer {
     private final BlockingQueue<FileEntity> fileQueue;
     private final BlockingQueue<Path> indexQueue;
 
-    private static final Path POISON_PATH = Path.of("__POSION__");
-    public static final String POISON_PILL_NAME = "___STOP_PROCESS___";
-    private static final Set<String> TEXT_EXTENSIONS = Set.of("txt", "java", "log", "md");
+    public static final Path IX_POISON = Path.of("__POSION__");
+    public static final String DB_POISON_PILL_NAME = "___STOP_PROCESS___";
+    public static final Set<String> TEXT_EXTENSIONS = Set.of("txt", "java", "log", "md");
 
-    public void scanAndSaveAllFiles(Path root,int dbWorkerCount, int indexWorkerCount) throws IOException, InterruptedException {
+    public void scanAndSaveAllFiles(Path root,int dbWorkerCount,int indexWorkerCount) throws IOException, InterruptedException {
         log.info("Dosyaları tarama ve veri tabanına yazma işlemleri başlıyor");
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
@@ -56,19 +56,23 @@ public class FileProducer {
                 return FileVisitResult.CONTINUE;
             }
         });
-        log.info("Tarama işlemi tamamlandı bitiş sinyalleri için zehirli haplar gönderiliyor..");
-
-        for (int i = 0; i < indexWorkerCount; i++) {
-            indexQueue.put(POISON_PATH);
-        }
-
-        for (int i = 0; i < dbWorkerCount; i++) {
-            FileEntity poisonPill = new FileEntity();
-            poisonPill.setName(POISON_PILL_NAME);
-            fileQueue.put(poisonPill);
-        }
+        endThreads();
     }
+    public void endThreads(){
+        log.info("Tarama işlemi tamamlandı bitiş sinyalleri için zehirli haplar gönderiliyor..");
+        try{
+            for (int i = 0; i < FileCoordinator.DB_WORKER_THREAD_COUNT; i++) {
+                FileEntity poisonPill = new FileEntity();
+                poisonPill.setName(DB_POISON_PILL_NAME);
+                fileQueue.put(poisonPill);
+            }
+            for (int i = 0; i < FileCoordinator.INDEX_WORKER_THREAD_COUNT; i++) {
+                indexQueue.put(IX_POISON);
+            }
+        } catch (InterruptedException e) {
+            log.error("Zehirli haplar gönderilirken bir hata oluştu: {}",e.getMessage());
+        }
+        log.info("Zehirli hapların hepsi gönderildi.");
 
-
-
+    }
 }

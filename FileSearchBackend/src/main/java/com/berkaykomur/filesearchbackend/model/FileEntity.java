@@ -7,7 +7,7 @@ import org.hibernate.annotations.SoftDelete;
 @Data
 @Entity
 @Table(name = "files")
-@SoftDelete(columnName = "isDeleted")
+@SoftDelete(columnName = "is_deleted")
 public class FileEntity {
 
     @Id
@@ -23,6 +23,4 @@ public class FileEntity {
     private String extension;
     private long lastModified;
     private Long size;
-
-
 }

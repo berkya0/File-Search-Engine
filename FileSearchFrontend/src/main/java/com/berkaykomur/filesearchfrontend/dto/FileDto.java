@@ -17,4 +17,5 @@ public class FileDto {
     private String extension;
     private long size;
     private long lastModified;
+
 }

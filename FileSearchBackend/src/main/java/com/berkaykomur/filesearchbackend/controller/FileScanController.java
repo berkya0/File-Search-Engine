@@ -18,7 +18,7 @@ public class FileScanController {
     @GetMapping("/start")
     public String startScan(@RequestParam String rootPath){
         log.info("Tarama işlemi bu klasörde başladı: {}", rootPath);
-        fileCoordinator.startFullProcess(rootPath);
+        fileCoordinator.startFullProcess(rootPath,false);
         return "Tarama tamamlandı!";
 
     }

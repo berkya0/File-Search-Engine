@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @Configuration
 public class LuceneConfig {
-    private String indexPath=System.getProperty("user.home")+ File.separator+"fileSearchIndex";
+    private final String indexPath=System.getProperty("user.home")+ File.separator+"fileSearchIndex";
 
     @Bean
     public Directory luceneDirectory() throws IOException {
@@ -22,7 +22,7 @@ public class LuceneConfig {
     }
     @Bean
     public TurkishAnalyzer analyzer(){
-        return new  TurkishAnalyzer();
+        return new TurkishAnalyzer();
 
     }
     @Bean

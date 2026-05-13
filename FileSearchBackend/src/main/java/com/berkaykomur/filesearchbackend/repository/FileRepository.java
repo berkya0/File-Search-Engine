@@ -4,9 +4,11 @@ import com.berkaykomur.filesearchbackend.model.FileEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -20,11 +22,34 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
     Page<FileEntity> searchFiles(@Param("name") String name,
                                  @Param("extensions") Set<String> extensions, Pageable pageable);
 
+
     List<FileEntity> findByPathIn(List<String> paths);
 
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO files (name, path, size, last_modified, extension, is_deleted, is_scanned) " +
+            "SELECT * FROM UNNEST(:names, :paths, :sizes, :lastModifieds, :extensions, :isDeleteds, :isScanneds) " +
+            "ON CONFLICT (path) DO UPDATE SET " +
+            "name = EXCLUDED.name, " +
+            "size = EXCLUDED.size, " +
+            "last_modified = EXCLUDED.last_modified, " +
+            "is_deleted = false, " +
+            "is_scanned = true", nativeQuery = true)
+    void upsertFilesBatch(@Param("names") String[] names,
+                          @Param("paths") String[] paths,
+                          @Param("sizes") Long[] sizes,
+                          @Param("lastModifieds") Long[] lastModifieds,
+                          @Param("extensions") String[] extensions,
+                          @Param("isDeleteds") Boolean[] isDeleteds,
+                          @Param("isScanneds") Boolean[] isScanneds);
 
+    @Query("SELECT f.path FROM FileEntity f WHERE f.path LIKE :zone%")
+    Set<String> findPathsByZone (@Param("zone") String zone);
 
-
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM FileEntity f WHERE f.path IN :paths")
+    void deleteAllByPathIn(@Param("paths") Set<String> paths);
 
 
 }

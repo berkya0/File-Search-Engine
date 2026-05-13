@@ -13,15 +13,14 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.Directory;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,26 +39,34 @@ public class LuceneIndexService {
 
     public void buildIndex(List<String> filePaths) {
 
-        log.info("İndeksleme işlemi başlatıldı Toplam {} dosya işlenecek.", filePaths.size());
-
         CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
-                .onMalformedInput(CodingErrorAction.REPLACE) // Hata yerine '?' koyar, çökmez
+                .onMalformedInput(CodingErrorAction.REPLACE)
                 .onUnmappableCharacter(CodingErrorAction.REPLACE);
 
+        // Önce tüm dökümanları hazırla (IO işlemi, lock yok)
+        List<Document> documents = new ArrayList<>();
         for (String filePath : filePaths) {
             Path path = Paths.get(filePath);
             if (!Files.exists(path)) continue;
-
-            Document document = new Document();
-            document.add(new StringField("path", filePath, Field.Store.YES));
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(Files.newInputStream(path), decoder))) {
-                document.add(new TextField("content", reader));
-
-                writer.updateDocument(new Term("path", filePath), document);
+            try {
+                // Dosyayı string olarak oku
+                String content = Files.readString(path, StandardCharsets.UTF_8);
+                Document document = new Document();
+                document.add(new StringField("path", filePath, Field.Store.YES));
+                document.add(new TextField("content", content, Field.Store.NO));
+                documents.add(document);
             } catch (IOException e) {
                 log.warn("Dosya okunurken hata: {} - {}", filePath, e.getMessage());
+            }
+        }
+
+        // Sonra hepsini tek seferde yaz (writer'a az dokunuyoruz)
+        for (Document document : documents) {
+            try {
+                writer.updateDocument(
+                        new Term("path", document.get("path")), document);
+            } catch (IOException e) {
+                log.warn("Index yazma hatası: {}", e.getMessage());
             }
         }
 
@@ -68,10 +75,13 @@ public class LuceneIndexService {
         try {
             writer.commit();
             searcherManager.maybeRefresh();
-            log.info("Tüm tarama bitti: İndeksler tek seferde kaydedildi ve tazelendi.");
+            log.info("İndeksler tek seferde kaydedildi ve tazelendi.");
         } catch (IOException e) {
             log.error("Final commit hatası!", e);
         }
     }
+
+    
+    ///HATALIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 
 }
