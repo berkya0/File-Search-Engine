@@ -14,13 +14,10 @@ import org.apache.lucene.store.Directory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,44 +29,36 @@ public class LuceneIndexService {
     private final Directory directory;
     private final IndexWriter writer;
     private final SearcherManager searcherManager;
-
-    //bu yere sonradan tekrar bak
     public void updateIndexPath(String indexPath) throws IOException {
     }
 
     public void buildIndex(List<String> filePaths) {
-
-        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
-                .onMalformedInput(CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE);
-
-        // Önce tüm dökümanları hazırla (IO işlemi, lock yok)
-        List<Document> documents = new ArrayList<>();
         for (String filePath : filePaths) {
             Path path = Paths.get(filePath);
             if (!Files.exists(path)) continue;
             try {
-                // Dosyayı string olarak oku
+                if (Files.size(path) > 10 * 1024 * 1024) {
+                    log.warn("Dosya çok büyük, atlandı: {}", filePath);
+                    continue;
+                }
                 String content = Files.readString(path, StandardCharsets.UTF_8);
                 Document document = new Document();
                 document.add(new StringField("path", filePath, Field.Store.YES));
                 document.add(new TextField("content", content, Field.Store.NO));
-                documents.add(document);
+                writer.updateDocument(new Term("path", filePath), document);
+
             } catch (IOException e) {
-                log.warn("Dosya okunurken hata: {} - {}", filePath, e.getMessage());
+                log.warn("Dosya okunurken veya indekslenirken hata: {} - {}", filePath, e.getMessage());
             }
         }
-
-        // Sonra hepsini tek seferde yaz (writer'a az dokunuyoruz)
-        for (Document document : documents) {
-            try {
-                writer.updateDocument(
-                        new Term("path", document.get("path")), document);
-            } catch (IOException e) {
-                log.warn("Index yazma hatası: {}", e.getMessage());
-            }
+    }
+    public void deleteFromIndex(String filePath) {
+        try {
+            writer.deleteDocuments(new Term("path", filePath));
+            log.debug("Index'ten silindi: {}", filePath);
+        } catch (IOException e) {
+            log.error("Index'ten silme hatası – {}: {}", filePath, e.getMessage());
         }
-
     }
     public void completeIndexing() {
         try {
@@ -80,8 +69,5 @@ public class LuceneIndexService {
             log.error("Final commit hatası!", e);
         }
     }
-
-    
-    ///HATALIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 
 }

@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,14 @@ public class IndexWorker {
 
         while (true) {
             try {
-                Path path=indexQueue.take();
+                Path path = indexQueue.poll(2, TimeUnit.SECONDS);
+                if (path == null) {
+                    if (!indexList.isEmpty()) {
+                        luceneIndexService.buildIndex(indexList);
+                        indexList.clear();
+                    }
+                    continue;
+                }
                 if(path.equals(FileProducer.IX_POISON)) {
                     log.info("Dosya sonuna gelindi. {}",path.getFileName());
                     break;

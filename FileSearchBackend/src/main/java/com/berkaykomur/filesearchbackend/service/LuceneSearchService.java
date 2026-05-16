@@ -6,7 +6,7 @@ import com.berkaykomur.filesearchbackend.model.FileEntity;
 import com.berkaykomur.filesearchbackend.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.analysis.tr.TurkishAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LuceneSearchService {
     private final FileRepository fileRepository;
-    private final TurkishAnalyzer analyzer;
+    private final Analyzer analyzer;
     private final SearcherManager searcherManager;
 
     public Page<FileDto> luceneSearch(String query, int page) {
