@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -39,6 +38,7 @@ public class DeltaScanService {
     private final FileCoordinator fileCoordinator;
     private final LuceneIndexService luceneIndexService;
     private final FileProducer fileProducer;
+    private final HotZoneWatchService  hotZoneWatchService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void init() {
@@ -52,6 +52,7 @@ public class DeltaScanService {
                     }
                     updateLastScanTime();
                     luceneIndexService.completeIndexing();
+                    hotZoneWatchService.start();
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -68,22 +69,15 @@ public class DeltaScanService {
         log.info("Delta scan taraması başlatıldı");
         long start = System.currentTimeMillis();
         try {
-            Set<Path> hotZones = new LinkedHashSet<>();
             String userHome = System.getProperty("user.home");
-
-            hotZones.add(Path.of(userHome, "Desktop"));
-            hotZones.add(Path.of(userHome, "Downloads"));
-            hotZones.add(Path.of(userHome, "Documents"));
-            hotZones.add(Path.of(userHome, "Pictures"));
-
             long lastScanTime = fileLastScanRepository.findByLastScanTime();
 
-            for (Path hotZone : hotZones) {
-
+            for (String hotZone : FileUtil.HOT_ZONE_NAMES) {
+                Path zone = Path.of(userHome, hotZone);
                 Set<String> dbPaths = new HashSet<>(
-                        fileRepository.findPathsByZone(hotZone.toString())
+                        fileRepository.findPathsByZone(zone.toAbsolutePath().toString())
                 );
-                Files.walkFileTree(hotZone, new SimpleFileVisitor<>() {
+                Files.walkFileTree(zone, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (!attrs.isRegularFile()) {
@@ -118,7 +112,7 @@ public class DeltaScanService {
                 });
                 if(!dbPaths.isEmpty()){
                     fileRepository.deleteAllByPathIn(dbPaths);
-                    log.info("{} bölgesi için {} dosya silindi.", hotZone, dbPaths.size());
+                    log.info("{} bölgesi için {} dosya silindi.", zone, dbPaths.size());
                 }
 
             }

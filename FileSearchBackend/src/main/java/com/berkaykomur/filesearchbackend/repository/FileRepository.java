@@ -27,21 +27,19 @@ public interface FileRepository extends JpaRepository<FileEntity, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO files (name, path, size, last_modified, extension, is_deleted, is_scanned) " +
-            "SELECT * FROM UNNEST(:names, :paths, :sizes, :lastModifieds, :extensions, :isDeleteds, :isScanneds) " +
+    @Query(value = "INSERT INTO files (name, path, size, last_modified, extension, is_deleted) " +
+            "SELECT * FROM UNNEST(:names, :paths, :sizes, :lastModifieds, :extensions, :isDeleteds) " +
             "ON CONFLICT (path) DO UPDATE SET " +
             "name = EXCLUDED.name, " +
             "size = EXCLUDED.size, " +
             "last_modified = EXCLUDED.last_modified, " +
-            "is_deleted = false, " +
-            "is_scanned = true", nativeQuery = true)
+            "is_deleted = false",nativeQuery = true)
     void upsertFilesBatch(@Param("names") String[] names,
                           @Param("paths") String[] paths,
                           @Param("sizes") Long[] sizes,
                           @Param("lastModifieds") Long[] lastModifieds,
                           @Param("extensions") String[] extensions,
-                          @Param("isDeleteds") Boolean[] isDeleteds,
-                          @Param("isScanneds") Boolean[] isScanneds);
+                          @Param("isDeleteds") Boolean[] isDeleteds);
 
     @Query("SELECT f.path FROM FileEntity f WHERE f.path LIKE :zone%")
     Set<String> findPathsByZone (@Param("zone") String zone);
