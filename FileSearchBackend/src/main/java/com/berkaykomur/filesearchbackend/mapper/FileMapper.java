@@ -45,7 +45,6 @@ public class FileMapper {
 
             fileEntity.setExtension(FileUtil.getExtension(path));
             fileEntity.setLastModified(attrs.lastModifiedTime().toMillis());
-            fileEntity.setScanned(true);
 
             return fileEntity;
         } catch (Exception e) {

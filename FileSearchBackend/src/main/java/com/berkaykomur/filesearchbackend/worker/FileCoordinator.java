@@ -32,8 +32,7 @@ public class FileCoordinator {
         long startTime = System.currentTimeMillis();
         List<Thread> threads = startThreads(isDeltaScan);
         try {
-            fileProducer.scanAndSaveAllFiles(Path.of(rootPath),
-                    DB_WORKER_THREAD_COUNT, INDEX_WORKER_THREAD_COUNT);
+            fileProducer.scanAndSaveAllFiles(Path.of(rootPath));
             log.info("Tüm tarama ve indexleme işlemi tamamlandı");
 
             for (Thread thread : threads) {

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -25,7 +26,14 @@ public class DatabaseWorker {
         List<FileEntity> batchList = new ArrayList<>();
         try {
             while (true) {
-                FileEntity fileEntity = fileQueue.take();
+                FileEntity fileEntity = fileQueue.poll(2, TimeUnit.SECONDS);
+
+                if (fileEntity == null) {
+                    if (!batchList.isEmpty()) {
+                        saveInBatch(batchList, isDeltaScan);
+                    }
+                    continue;
+                }
                 if (FileProducer.DB_POISON_PILL_NAME.equals(fileEntity.getName())) {
                     log.info("Bitiş sinyali alındı kaydetme işlemi sona erecek");
                     break;
@@ -59,8 +67,7 @@ public class DatabaseWorker {
                Long[] dates = list.stream().map(FileEntity::getLastModified).toArray(Long[]::new);
                String[] exts = list.stream().map(FileEntity::getExtension).toArray(String[]::new);
                Boolean[] deleted = new Boolean[list.size()]; Arrays.fill(deleted, false);
-               Boolean[] scanned = new Boolean[list.size()]; Arrays.fill(scanned, true);
-               fileRepository.upsertFilesBatch(names, paths, sizes, dates, exts, deleted, scanned);
+               fileRepository.upsertFilesBatch(names, paths, sizes, dates, exts, deleted);
            }
 
        } finally {

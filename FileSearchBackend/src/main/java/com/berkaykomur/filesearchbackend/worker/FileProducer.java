@@ -27,7 +27,7 @@ public class FileProducer {
     public static final String DB_POISON_PILL_NAME = "___STOP_PROCESS___";
     public static final Set<String> TEXT_EXTENSIONS = Set.of("txt", "java", "log", "md");
 
-    public void scanAndSaveAllFiles(Path root,int dbWorkerCount,int indexWorkerCount) throws IOException, InterruptedException {
+    public void scanAndSaveAllFiles(Path root) throws IOException, InterruptedException {
         log.info("Dosyaları tarama ve veri tabanına yazma işlemleri başlıyor");
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
