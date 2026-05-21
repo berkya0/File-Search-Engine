@@ -31,7 +31,7 @@ public class FileView {
 
     @FXML
     public void initialize() throws JsonProcessingException {
-        log.info("Frontend hazırlanıyor...");
+        log.info("Dashboard hazırlanıyor...");
         FileViewUtil.setupTableColumns(colFileName,colPath,colSize,colLastmodified);
 
         searchModeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {

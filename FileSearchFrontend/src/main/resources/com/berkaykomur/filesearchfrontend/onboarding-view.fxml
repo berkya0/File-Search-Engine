@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="720.0" prefWidth="1028.0" style="-fx-background-color: #EDF2F7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.view.OnBoardingView">
+    <center>
+        <VBox alignment="CENTER" maxWidth="900.0" spacing="40.0" BorderPane.alignment="CENTER">
+            <children>
+
+                <VBox alignment="CENTER" spacing="10.0">
+                    <children>
+                        <Label text="Dosya Gezginine Hoş Geldiniz" textFill="#2D3748">
+                            <font>
+                                <Font name="System Bold" size="28.0" />
+                            </font>
+                        </Label>
+                        <Label text="Aramaya başlamak için lütfen bir başlangıç yöntemi seçin." textFill="#718096">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
+
+                <HBox alignment="CENTER" spacing="30.0">
+                    <children>
+
+                        <VBox alignment="TOP_CENTER" prefHeight="320.0" prefWidth="380.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 20, 0, 0, 8);">
+                            <padding>
+                                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                            </padding>
+                            <children>
+                                <VBox alignment="CENTER" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #EBF8FF; -fx-background-radius: 15;">
+                                    <children>
+                                        <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 6h-4v2h4v2h-4v2h4v2H9V7h6v2z" fill="#4299E1" scaleX="1.5" scaleY="1.5" />
+                                    </children>
+                                </VBox>
+                                <Label text="Hızlı Başlangıç" textFill="#2D3748">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label alignment="CENTER" text="Sadece kritik ve sık kullanılan dizinleri (Masaüstü, Belgeler vb.) hızlıca tarar ve hemen hazır hale getirir." textAlignment="CENTER" textFill="#718096" wrapText="true">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                                <VBox alignment="BOTTOM_CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <ProgressIndicator fx:id="progressQuick" prefHeight="35.0" prefWidth="35.0" visible="false" managed="false" />
+                                        <Button fx:id="btnQuickStart" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #4299E1; -fx-background-radius: 10; -fx-cursor: hand;" text="Hızlı Başlangıç" textFill="WHITE">
+                                            <font>
+                                                <Font name="System Bold" size="13.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+
+                        <VBox alignment="TOP_CENTER" prefHeight="320.0" prefWidth="380.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 20, 0, 0, 8);">
+                            <padding>
+                                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                            </padding>
+                            <children>
+                                <VBox alignment="CENTER" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #E6FFFA; -fx-background-radius: 15;">
+                                    <children>
+                                        <SVGPath content="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 8c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#319795" scaleX="1.5" scaleY="1.5" />
+                                    </children>
+                                </VBox>
+                                <Label text="Tüm Dosyaları Tara" textFill="#2D3748">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label alignment="CENTER" text="Sistemdeki tüm diskleri ve klasörleri derinlemesine tarar. Bu işlem toplam dosya sayına bağlı olarak değişmekle birlikte 5-10 dakika sürebilir." textAlignment="CENTER" textFill="#718096" wrapText="true">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </Label>
+                                <VBox alignment="BOTTOM_CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <ProgressIndicator fx:id="progressFull" prefHeight="35.0" prefWidth="35.0" visible="false" managed="false" />
+                                        <Button fx:id="btnScanAll" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #319795; -fx-background-radius: 10; -fx-cursor: hand;" text="Tümünü Tara" textFill="WHITE">
+                                            <font>
+                                                <Font name="System Bold" size="13.0" />
+                                            </font>
+                                        </Button>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+
+                    </children>
+                </HBox>
+
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

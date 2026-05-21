@@ -3,6 +3,7 @@ package com.berkaykomur.filesearchbackend.worker;
 import com.berkaykomur.filesearchbackend.model.FileLastScan;
 import com.berkaykomur.filesearchbackend.repository.FileLastScanRepository;
 import com.berkaykomur.filesearchbackend.service.LuceneIndexService;
+import com.berkaykomur.filesearchbackend.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +27,41 @@ public class FileCoordinator {
 
     public static final int DB_WORKER_THREAD_COUNT = 3;
     public static final int INDEX_WORKER_THREAD_COUNT = 5;
+    private List<Thread> threads;
 
-    @Async
+    public void quickStart(){
+       Set<Path> quickFiles= FileUtil.HOT_ZONE_NAMES;
+       log.info("Hızlı başlangıç yapılıyor klasörler: [{}]", quickFiles);
+        long startTime = System.currentTimeMillis();
+        try{
+            for (Path directory : quickFiles) {
+                threads = startThreads(false);
+                fileProducer.scanAndSaveAllFiles(directory);
+            }
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        }
+        catch (IOException | InterruptedException e) {
+            log.error("Kritik koordinasyon hatası: ", e);
+            Thread.currentThread().interrupt();
+        }
+
+        luceneIndexService.completeIndexing();
+        FileLastScan syncRecord = fileLastScanRepository.findById(1).orElse(new FileLastScan());
+        syncRecord.setLastScanTime(System.currentTimeMillis());
+        fileLastScanRepository.save(syncRecord);
+
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        log.info("Hızlı başlangıç tamamlandı! Süre: {} saniye", duration / 1000);
+
+    }
+
     public void startFullProcess(String rootPath, boolean isDeltaScan) {
         log.info("İşlem başlatılıyor. Hedef: {}", rootPath);
         long startTime = System.currentTimeMillis();
-        List<Thread> threads = startThreads(isDeltaScan);
+        threads = startThreads(isDeltaScan);
         try {
             fileProducer.scanAndSaveAllFiles(Path.of(rootPath));
             log.info("Tüm tarama ve indexleme işlemi tamamlandı");
@@ -43,7 +74,7 @@ public class FileCoordinator {
             syncRecord.setLastScanTime(System.currentTimeMillis());
             fileLastScanRepository.save(syncRecord);
 
-            long endTime = System.currentTimeMillis(); // ← bitiş
+            long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
             log.info("Tarama tamamlandı! Süre: {} saniye", duration / 1000);
         }

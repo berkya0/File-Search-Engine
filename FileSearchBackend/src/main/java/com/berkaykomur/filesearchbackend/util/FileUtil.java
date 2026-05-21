@@ -10,9 +10,13 @@ public class FileUtil {
             return file.getFileName().toString().substring(dotIndex+1);
         else return null;
     }
-    public static Set<String> HOT_ZONE_NAMES = Set.of(
-            "Desktop", "Downloads", "Documents", "Pictures"
-    );
+    private static final String USER_HOME = System.getProperty("user.home");
 
+    public static final Set<Path> HOT_ZONE_NAMES = Set.of(
+            Path.of(USER_HOME, "Desktop").toAbsolutePath(),
+            Path.of(USER_HOME, "Downloads").toAbsolutePath(),
+            Path.of(USER_HOME, "Documents").toAbsolutePath(),
+            Path.of(USER_HOME, "Pictures").toAbsolutePath()
+    );
 
 }

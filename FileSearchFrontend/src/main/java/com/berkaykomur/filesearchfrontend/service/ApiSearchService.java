@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-public class ApiService {
+public class ApiSearchService {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String BASE_URL = "http://localhost:8080/api/search";
 

@@ -70,9 +70,7 @@ public class HotZoneWatchService {
         }
     }
     private void registerHotZones() throws IOException {
-        String userHome = System.getProperty("user.home");
-        for (String zoneName : FileUtil.HOT_ZONE_NAMES) {
-            Path zone = Path.of(userHome, zoneName);
+        for (Path zone : FileUtil.HOT_ZONE_NAMES) {
             if (!Files.exists(zone)) {
                 log.warn("Hot zone bulunamadı, atlanıyor: {}", zone);
                 continue;

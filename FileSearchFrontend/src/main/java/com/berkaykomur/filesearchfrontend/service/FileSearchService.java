@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 
 public class FileSearchService {
-    private final ApiService apiService = new ApiService();
+    private final ApiSearchService apiService = new ApiSearchService();
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Getter
     private final ObservableList<FileDto> masterData = FXCollections.observableArrayList();

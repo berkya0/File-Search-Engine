@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -41,43 +42,44 @@ public class DeltaScanService {
     private final HotZoneWatchService  hotZoneWatchService;
 
     @EventListener(ApplicationReadyEvent.class)
+    @Async
     public void init() {
-        if(!(fileLastScanRepository.count()==0)){
-            CompletableFuture.runAsync(() -> {
-                try {
-                    List<Thread> threads = fileCoordinator.startThreads(true);
-                    deltaScan();
-                    for (Thread thread : threads) {
-                        thread.join();
-                    }
-                    updateLastScanTime();
-                    luceneIndexService.completeIndexing();
-                    hotZoneWatchService.start();
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    log.error("Delta scan kesildi: ", e);
-                }
-            }).exceptionally(e -> {
-                log.error("Delta scan hatası: ", e);
-                return null;
-            });
+        if (fileLastScanRepository.count() == 0) {
+            log.info("İlk açılış: Onboarding bekleniyor, otomatik Delta Scan atlandı.");
+            return;
         }
+        CompletableFuture.runAsync(() -> {
+            try {
+                List<Thread> threads = fileCoordinator.startThreads(true);
+                deltaScan();
+                for (Thread thread : threads) {
+                    thread.join();
+                }
+                updateLastScanTime();
+                luceneIndexService.completeIndexing();
+                hotZoneWatchService.start();
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Delta scan kesildi: ", e);
+            }
+        }).exceptionally(e -> {
+            log.error("Delta scan hatası: ", e);
+            return null;
+        });
     }
 
     public void deltaScan() throws InterruptedException {
         log.info("Delta scan taraması başlatıldı");
         long start = System.currentTimeMillis();
         try {
-            String userHome = System.getProperty("user.home");
             long lastScanTime = fileLastScanRepository.findByLastScanTime();
 
-            for (String hotZone : FileUtil.HOT_ZONE_NAMES) {
-                Path zone = Path.of(userHome, hotZone);
+            for (Path hotZone : FileUtil.HOT_ZONE_NAMES) {
                 Set<String> dbPaths = new HashSet<>(
-                        fileRepository.findPathsByZone(zone.toAbsolutePath().toString())
+                        fileRepository.findPathsByZone(hotZone.toString())
                 );
-                Files.walkFileTree(zone, new SimpleFileVisitor<>() {
+                Files.walkFileTree(hotZone, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (!attrs.isRegularFile()) {
@@ -112,7 +114,7 @@ public class DeltaScanService {
                 });
                 if(!dbPaths.isEmpty()){
                     fileRepository.deleteAllByPathIn(dbPaths);
-                    log.info("{} bölgesi için {} dosya silindi.", zone, dbPaths.size());
+                    log.info("{} bölgesi için {} dosya silindi.", hotZone, dbPaths.size());
                 }
 
             }
