@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: #F8FAFC; -fx-background-insets: 0; -fx-padding: 0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.view.SettingsView">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="25.0" style="-fx-background-color: #F8FAFC;">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+            <children>
+
+                <VBox alignment="TOP_LEFT" maxWidth="800.0" spacing="8.0">
+                    <children>
+                        <Label text="Ayarlar ve Yapılandırma" textFill="#1E293B">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <Label text="Arama motorunun çalışma prensibini buradan yönetebilirsiniz." textFill="#64748B">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="15.0" />
+                    </VBox.margin>
+                </VBox>
+
+                <VBox maxWidth="800.0" spacing="20.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 2); -fx-border-color: #E2E8F0; -fx-border-radius: 12;">
+                    <padding>
+                        <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
+                    </padding>
+                    <children>
+                        <Label text="📂 Klasör Tarama" textFill="#334155">
+                            <font>
+                                <Font name="System Bold" size="16.0" />
+                            </font>
+                        </Label>
+
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                            <children>
+                                <TextField fx:id="directoryPathField" promptText="Taranacak klasörü seçin..." style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #CBD5E0; -fx-padding: 12;" HBox.hgrow="ALWAYS">
+                                    <font>
+                                        <Font size="13.0" />
+                                    </font>
+                                </TextField>
+                                <Button fx:id="browseButton" onAction="#handleBrowseDirectory" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-background-radius: 8; -fx-padding: 12 24; -fx-cursor: hand; -fx-font-weight: bold; -fx-border-color: #E2E8F0; -fx-border-radius: 8;" text="Göz At..." />
+                            </children>
+                        </HBox>
+                  <CheckBox fx:id="skipHiddenFilesCheck" style="-fx-cursor: hand;" text="Alt klasörleri tara" textFill="#475569">
+                     <font>
+                        <Font size="13.5" />
+                     </font>
+                  </CheckBox>
+
+                        <Button fx:id="scanButton" maxWidth="Infinity" onAction="#handleStartScan" style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-background-radius: 8; -fx-padding: 14; -fx-font-weight: bold; -fx-cursor: hand;" text="🔍 Taramayı Başlat">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </VBox>
+            <VBox prefHeight="30.0" prefWidth="402.0">
+               <children>
+                  <HBox alignment="TOP_RIGHT" prefHeight="30.0" prefWidth="181.0">
+                     <children>
+                        <Button contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="30.0" prefWidth="98.0" text="Kaydet">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>
