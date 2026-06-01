@@ -1,19 +1,23 @@
 package com.berkaykomur.filesearchbackend.worker;
 
+import com.berkaykomur.filesearchbackend.mapper.FileMapper;
+import com.berkaykomur.filesearchbackend.model.FileEntity;
 import com.berkaykomur.filesearchbackend.model.FileLastScan;
 import com.berkaykomur.filesearchbackend.repository.FileLastScanRepository;
 import com.berkaykomur.filesearchbackend.service.LuceneIndexService;
 import com.berkaykomur.filesearchbackend.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -30,31 +34,49 @@ public class FileCoordinator {
     private List<Thread> threads;
 
     public void quickStart(){
-       Set<Path> quickFiles= FileUtil.HOT_ZONE_NAMES;
+       Set<String> quickFiles= FileUtil.HOT_ZONE_NAMES;
        log.info("Hızlı başlangıç yapılıyor klasörler: [{}]", quickFiles);
         long startTime = System.currentTimeMillis();
+        threads = startThreads(false);
         try{
-            for (Path directory : quickFiles) {
-                threads = startThreads(false);
-                fileProducer.scanAndSaveAllFiles(directory);
+            for (String directory : quickFiles) {
+                fileProducer.scanAndSaveAllFiles(Path.of(directory));
             }
-            for (Thread thread : threads) {
-                thread.join();
-            }
+            sendPoisonPills();
         }
         catch (IOException | InterruptedException e) {
             log.error("Kritik koordinasyon hatası: ", e);
             Thread.currentThread().interrupt();
         }
+        waitThreads();
+        completeProcess(startTime,"Hızlı Başlangıç tamamlandı");
 
-        luceneIndexService.completeIndexing();
-        FileLastScan syncRecord = fileLastScanRepository.findById(1).orElse(new FileLastScan());
-        syncRecord.setLastScanTime(System.currentTimeMillis());
-        fileLastScanRepository.save(syncRecord);
+    }
 
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        log.info("Hızlı başlangıç tamamlandı! Süre: {} saniye", duration / 1000);
+    public void scanSingleDirectory(String directoryPath) {
+        log.info("Tek bir klasör taranıyor: {}", directoryPath);
+        long startTime = System.currentTimeMillis();
+        Path path = Path.of(directoryPath);
+        threads = startThreads(false);
+        try (Stream<Path> stream = Files.list(path)) {
+            stream.forEach(file -> {
+                try {
+                    FileEntity entity = FileMapper.fromPathToFile(file, Files.readAttributes(file, BasicFileAttributes.class));
+                    fileProducer.getFileQueue().put(entity);
+
+                    if (FileProducer.TEXT_EXTENSIONS.contains(FileUtil.getExtension(file.toString()))) {
+                        fileProducer.getIndexQueue().put(file);
+                    }
+                } catch (Exception e) {
+                    log.error("Hata: ", e);
+                }
+            });
+        } catch (IOException e) {
+            log.error("Klasör okunamadı: ", e);
+        }
+        sendPoisonPills();
+        waitThreads();
+        completeProcess(startTime,"Tek bir klasör başarıyla tarandı");
 
     }
 
@@ -64,24 +86,15 @@ public class FileCoordinator {
         threads = startThreads(isDeltaScan);
         try {
             fileProducer.scanAndSaveAllFiles(Path.of(rootPath));
-            log.info("Tüm tarama ve indexleme işlemi tamamlandı");
-
-            for (Thread thread : threads) {
-                thread.join();
-            }
-            luceneIndexService.completeIndexing();
-            FileLastScan syncRecord = fileLastScanRepository.findById(1).orElse(new FileLastScan());
-            syncRecord.setLastScanTime(System.currentTimeMillis());
-            fileLastScanRepository.save(syncRecord);
-
-            long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
-            log.info("Tarama tamamlandı! Süre: {} saniye", duration / 1000);
+            sendPoisonPills();
         }
         catch (IOException | InterruptedException e) {
             log.error("Kritik koordinasyon hatası: ", e);
             Thread.currentThread().interrupt();
         }
+        waitThreads();
+        log.info("Tüm worker thread'lerin çalışması ve indeksleme işlemi tamamlandı.");
+        completeProcess(startTime,"Tarama işlemi tamamlandı");
     }
 
     public List<Thread> startThreads(boolean isDeltaScan) {
@@ -101,5 +114,43 @@ public class FileCoordinator {
         }
         return threads;
     }
+    private void waitThreads()  {
+        try {
+            for (Thread thread : threads) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+            log.error("Threadler kesintiye uğradı {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+    private void sendPoisonPills(){
+        log.info("Tarama bitti, worker thread'leri kapatmak için zehirli haplar gönderiliyor...");
 
+        try{
+            for (int i = 0; i < DB_WORKER_THREAD_COUNT; i++) {
+                FileEntity poisonPill = new FileEntity();
+                poisonPill.setName(FileProducer.DB_POISON_PILL_NAME);
+                fileProducer.getFileQueue().put(poisonPill);
+            }
+            for (int i = 0; i < INDEX_WORKER_THREAD_COUNT; i++) {
+                fileProducer.getIndexQueue().put(FileProducer.IX_POISON);
+            }
+        } catch (InterruptedException e) {
+            log.error("Threadler kesintiye uğradı, Zehirli haplar gönderilemedi {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        log.info("Tüm zehirli haplar başarıyla kuyruklara bırakıldı.");
+    }
+
+    private void completeProcess(long startTime, String logMessage) {
+        luceneIndexService.completeIndexing();
+        FileLastScan syncRecord = fileLastScanRepository.findById(1).orElse(new FileLastScan());
+        syncRecord.setLastScanTime(System.currentTimeMillis());
+        fileLastScanRepository.save(syncRecord);
+
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        log.info("{} Süre: {} saniye", logMessage, duration / 1000);
+    }
 }

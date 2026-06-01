@@ -11,6 +11,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Font?>
 <VBox maxWidth="-Infinity" prefHeight="720.0" prefWidth="958.0" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.view.FileView">
     <padding>
         <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
@@ -89,5 +91,14 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
+        <HBox alignment="CENTER_LEFT" maxWidth="923.0" prefWidth="923.0" style="-fx-padding: 0 10 0 10;">
+            <children>
+                <Label fx:id="resultCountLabel" text="Toplam 0 dosya bulundu" textFill="#718096">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
     </children>
 </VBox>

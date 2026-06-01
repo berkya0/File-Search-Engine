@@ -57,7 +57,6 @@ public class ApiSearchService {
                 });
     }
 
-    //BİRAZ SORUNLU OLABİLİR BAK TEKRARDAN
     public CompletableFuture<String> searchInContent(String query, int page) {
         log.info("İçerikte arama isteği hazırlanıyor... Query: {}, Sayfa: {}", query, page);
 
@@ -83,4 +82,5 @@ public class ApiSearchService {
                     return null;
                 });
     }
+
 }

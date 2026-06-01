@@ -1,6 +1,7 @@
 package com.berkaykomur.filesearchbackend.controller;
 
 import com.berkaykomur.filesearchbackend.repository.FileLastScanRepository;
+import com.berkaykomur.filesearchbackend.service.DirectoryScanService;
 import com.berkaykomur.filesearchbackend.worker.FileCoordinator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class FileScanController {
     private final FileCoordinator fileCoordinator;
     private final FileLastScanRepository fileLastScanRepository;
+    private final DirectoryScanService directoryScanService;
 
     @PostMapping("/start")
     public ResponseEntity<String> startScan(@RequestParam String rootPath){
@@ -32,5 +34,12 @@ public class FileScanController {
         boolean hasScanHistory = fileLastScanRepository.count() > 0;
         return ResponseEntity.ok(hasScanHistory);
     }
+
+    @PostMapping("/directory")
+    public ResponseEntity<String> directoryScan(@RequestParam String rootPath,@RequestParam(required = false) boolean includeSubFolders){
+        directoryScanService.directoryScan(rootPath,includeSubFolders);
+        return ResponseEntity.accepted().body("Klasör tarama isteği başarıyla yanıtlandı ve klasör tarandı.");
+    }
+
 
 }

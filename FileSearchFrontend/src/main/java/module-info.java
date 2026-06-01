@@ -11,6 +11,11 @@ module com.berkaykomur.filesearchfrontend {
     requires javafx.base;
     requires org.slf4j;
     requires javafx.graphics;
+    requires java.desktop;
+    requires com.sun.jna.platform;
+
+    requires com.fasterxml.jackson.core;
+
 
     opens com.berkaykomur.filesearchfrontend.view to javafx.fxml;
     opens com.berkaykomur.filesearchfrontend.dto to com.fasterxml.jackson.databind, javafx.base;

@@ -5,11 +5,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.layout.FlowPane?>
 <ScrollPane fitToWidth="true" style="-fx-background-color: #F8FAFC; -fx-background-insets: 0; -fx-padding: 0;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.berkaykomur.filesearchfrontend.view.DashboardView">
     <content>
         <VBox spacing="25.0" style="-fx-background-color: #F8FAFC;">
@@ -38,7 +37,7 @@
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </padding>
                     <children>
-                        <Label text="⭐ Favori Klasörler" textFill="#334155">
+                        <Label text="★ Favori Klasörler" textFill="#334155">
                             <font>
                                 <Font name="System Bold" size="15.0" />
                             </font>

@@ -24,7 +24,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -34,8 +33,6 @@ public class DeltaScanService {
 
     private final FileLastScanRepository fileLastScanRepository;
     private final FileRepository fileRepository;
-    private final BlockingQueue<FileEntity> fileQueue;
-    private final BlockingQueue<Path> indexQueue;
     private final FileCoordinator fileCoordinator;
     private final LuceneIndexService luceneIndexService;
     private final FileProducer fileProducer;
@@ -75,17 +72,31 @@ public class DeltaScanService {
         try {
             long lastScanTime = fileLastScanRepository.findByLastScanTime();
 
-            for (Path hotZone : FileUtil.HOT_ZONE_NAMES) {
+            for (String hotZone : FileUtil.HOT_ZONE_NAMES) {
                 Set<String> dbPaths = new HashSet<>(
-                        fileRepository.findPathsByZone(hotZone.toString())
+                        fileRepository.findPathsByZone(hotZone)
                 );
-                Files.walkFileTree(hotZone, new SimpleFileVisitor<>() {
+                Files.walkFileTree(Path.of(hotZone), new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                        String folderName = dir.getFileName().toString().toLowerCase();
+
+                        if (folderName.equals("node_modules")
+                                || folderName.equals(".git")
+                                || folderName.equals("target")
+                                || folderName.equals("build")
+                                || folderName.equals("appdata")) {
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (!attrs.isRegularFile()) {
                             return FileVisitResult.CONTINUE;
                         }
-                        boolean isNewFile = !dbPaths.remove(file.toAbsolutePath().toString());
+                        String currentDiskPath = file.toAbsolutePath().toString().replace("\\", "/");
+                        boolean isNewFile = !dbPaths.remove(currentDiskPath);
 
                         long fileTime = attrs.lastModifiedTime().toMillis();
                         boolean isModified=fileTime > lastScanTime;
@@ -93,11 +104,11 @@ public class DeltaScanService {
                             try {
                                 FileEntity fileEntity = FileMapper.fromPathToFile(file, attrs);
                                 if (fileEntity != null) {
-                                    fileQueue.put(fileEntity);
+                                    fileProducer.getFileQueue().put(fileEntity);
                                 }
-                                String extension = FileUtil.getExtension(file);
+                                String extension = FileUtil.getExtension(file.getFileName().toString());
                                 if (extension != null && FileProducer.TEXT_EXTENSIONS.contains(extension)) {
-                                    indexQueue.put(file);
+                                   fileProducer.getIndexQueue().put(file);
                                 }
                             } catch (Exception e) {
                                 log.error("Beklenmedik bir hata meydana geldi: {}", e.getMessage());

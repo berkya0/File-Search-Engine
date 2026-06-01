@@ -26,19 +26,19 @@ public class DatabaseWorker {
         List<FileEntity> batchList = new ArrayList<>();
         try {
             while (true) {
-                FileEntity fileEntity = fileQueue.poll(2, TimeUnit.SECONDS);
+                FileEntity entity = fileQueue.poll(2, TimeUnit.SECONDS);
 
-                if (fileEntity == null) {
+                if (entity == null) {
                     if (!batchList.isEmpty()) {
                         saveInBatch(batchList, isDeltaScan);
                     }
                     continue;
                 }
-                if (FileProducer.DB_POISON_PILL_NAME.equals(fileEntity.getName())) {
+                if (FileProducer.DB_POISON_PILL_NAME.equals(entity.getName())) {
                     log.info("Bitiş sinyali alındı kaydetme işlemi sona erecek");
                     break;
                 }
-                batchList.add(fileEntity);
+                batchList.add(entity);
                 if (batchList.size() >= BATCH_SIZE) {
                   saveInBatch(batchList,isDeltaScan);
                 }
@@ -67,7 +67,11 @@ public class DatabaseWorker {
                Long[] dates = list.stream().map(FileEntity::getLastModified).toArray(Long[]::new);
                String[] exts = list.stream().map(FileEntity::getExtension).toArray(String[]::new);
                Boolean[] deleted = new Boolean[list.size()]; Arrays.fill(deleted, false);
-               fileRepository.upsertFilesBatch(names, paths, sizes, dates, exts, deleted);
+               Boolean[] favorited=new Boolean[list.size()]; Arrays.fill(favorited, false);
+               Boolean[] directory=new Boolean[list.size()]; Arrays.fill(directory, false);
+               Long[] lastOpens = new Long[list.size()];
+               Arrays.fill(lastOpens, 0L);
+               fileRepository.upsertFilesBatch(names, paths, sizes, dates, exts, deleted,favorited,directory,lastOpens);
            }
 
        } finally {

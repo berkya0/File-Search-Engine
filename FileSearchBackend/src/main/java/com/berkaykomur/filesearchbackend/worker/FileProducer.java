@@ -3,6 +3,7 @@ package com.berkaykomur.filesearchbackend.worker;
 import com.berkaykomur.filesearchbackend.mapper.FileMapper;
 import com.berkaykomur.filesearchbackend.model.FileEntity;
 import com.berkaykomur.filesearchbackend.util.FileUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.concurrent.BlockingQueue;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Getter
 public class FileProducer {
     private final BlockingQueue<FileEntity> fileQueue;
     private final BlockingQueue<Path> indexQueue;
@@ -31,6 +33,28 @@ public class FileProducer {
         log.info("Dosyaları tarama ve veri tabanına yazma işlemleri başlıyor");
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                Path fileNamePath = dir.getFileName();
+                String folderName = (fileNamePath != null) ? fileNamePath.toString().toLowerCase() : dir.toString().toLowerCase();
+                if (folderName.equals("node_modules")
+                        || folderName.equals(".git")
+                        || folderName.equals("target")
+                        || folderName.equals("build")
+                        || folderName.equals("appdata")) {
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
+                try {
+                    FileEntity folderEntity = FileMapper.fromPathToFile(dir, attrs);
+                    if (folderEntity != null) {
+                        fileQueue.put(folderEntity);
+                    }
+                } catch (Exception e) {
+                    log.error("Klasör kuyruğa eklenirken hata: {}", e.getMessage());
+                }
+
+                return FileVisitResult.CONTINUE;
+            }
+            @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 if (!attrs.isRegularFile()) {
                     return FileVisitResult.CONTINUE;
@@ -40,8 +64,8 @@ public class FileProducer {
                     if(fileEntity!=null){
                         fileQueue.put(fileEntity);
                     }
-                    String extension=FileUtil.getExtension(file);
-                    if (extension!=null&& TEXT_EXTENSIONS.contains(FileUtil.getExtension(file))) {
+                    String extension=FileUtil.getExtension(file.getFileName().toString());
+                    if (extension!=null&& TEXT_EXTENSIONS.contains(FileUtil.getExtension(file.toString()))) {
                         indexQueue.put(file);
                     }
                 } catch (Exception e) {
@@ -56,7 +80,7 @@ public class FileProducer {
                 return FileVisitResult.CONTINUE;
             }
         });
-        endThreads();
+
     }
     public void endThreads(){
         log.info("Tarama işlemi tamamlandı bitiş sinyalleri için zehirli haplar gönderiliyor..");

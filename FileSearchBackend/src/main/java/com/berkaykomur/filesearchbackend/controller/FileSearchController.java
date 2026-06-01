@@ -40,4 +40,5 @@ public class FileSearchController {
         log.info("içerikte arama işlemi başarıyla yanıtlandı.");
         return ResponseEntity.ok(files);
     }
+
 }

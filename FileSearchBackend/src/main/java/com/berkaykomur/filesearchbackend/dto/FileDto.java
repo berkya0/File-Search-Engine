@@ -16,6 +16,9 @@ public class FileDto {
     private String extension;
     private long size;
     private long lastModified;
+    private boolean isFavorite;
+    private boolean isDirectory;
+    private long lastOpen;
 
 
 }

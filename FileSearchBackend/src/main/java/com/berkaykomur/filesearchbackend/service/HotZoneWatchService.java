@@ -26,11 +26,11 @@ import static java.nio.file.StandardWatchEventKinds.*;
 @RequiredArgsConstructor
 public class HotZoneWatchService {
 
-    private final BlockingQueue<FileEntity> fileQueue;
-    private final BlockingQueue<Path> indexQueue;
+
     private final FileRepository fileRepository;
     private ScheduledExecutorService commitScheduler;
     private final LuceneIndexService luceneIndexService;
+    private final FileProducer fileProducer;
 
     private final FileCoordinator fileCoordinator;
     private final Map<WatchKey, Path> watchKeyMap = new HashMap<>();
@@ -46,7 +46,6 @@ public class HotZoneWatchService {
                 t.setDaemon(true);
                 return t;
             });
-
 
             commitScheduler = Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "Lucene-Commit");
@@ -70,18 +69,28 @@ public class HotZoneWatchService {
         }
     }
     private void registerHotZones() throws IOException {
-        for (Path zone : FileUtil.HOT_ZONE_NAMES) {
-            if (!Files.exists(zone)) {
+        for (String zone : FileUtil.HOT_ZONE_NAMES) {
+            if (!Files.exists(Path.of(zone))) {
                 log.warn("Hot zone bulunamadı, atlanıyor: {}", zone);
                 continue;
             }
-            registerRecursively(zone);
+            registerRecursively(Path.of(zone));
         }
     }
     private void registerRecursively(Path root) throws IOException {
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                String folderName = dir.getFileName().toString().toLowerCase();
+                if (folderName.equals("node_modules")
+                        || folderName.equals(".git")
+                        || folderName.equals("target")
+                        || folderName.equals("build")
+                        || folderName.equals("appdata")) {
+
+                    log.info("Performans Koruması: '{}' klasörü hiyerarşiden atlandı.", dir);
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
                 registerDirectory(dir);
                 return FileVisitResult.CONTINUE;
             }
@@ -162,10 +171,7 @@ public class HotZoneWatchService {
             } catch (IOException e) {
                 log.error("Yeni klasör izlemeye alınamadı: {}", path);
             }
-            return;
         }
-
-        if (!Files.isRegularFile(path)) return;
 
         log.info("[OLUŞTURULDU] {}", path);
         enqueueFile(path, false);
@@ -181,7 +187,7 @@ public class HotZoneWatchService {
 
     private void handleDelete(Path path) {
         log.info("[SİLİNDİ] {}", path);
-        String absolutePath = path.toAbsolutePath().toString();
+        String absolutePath = path.toAbsolutePath().toString().replace("\\", "/");
         try {
             fileRepository.deleteAllByPathIn(Set.of(absolutePath));
             log.debug("DB'den silindi: {}", absolutePath);
@@ -189,7 +195,7 @@ public class HotZoneWatchService {
             log.error("DB silme hatası – {}: {}", absolutePath, e.getMessage());
         }
 
-        String extension = FileUtil.getExtension(path);
+        String extension = FileUtil.getExtension(path.getFileName().toString());
         if (extension != null && FileProducer.TEXT_EXTENSIONS.contains(extension)) {
             luceneIndexService.deleteFromIndex(absolutePath);
         }
@@ -200,7 +206,7 @@ public class HotZoneWatchService {
             BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
             FileEntity entity = FileMapper.fromPathToFile(path, attrs);
             if (entity != null) {
-                fileQueue.put(entity);
+                fileProducer.getFileQueue().put(entity);
                 log.debug("fileQueue'ya eklendi (update={}): {}", isDeltaUpdate, path);
             }
         } catch (IOException e) {
@@ -212,10 +218,10 @@ public class HotZoneWatchService {
     }
 
     private void enqueueIndex(Path path) {
-        String extension = FileUtil.getExtension(path);
+        String extension = FileUtil.getExtension(path.getFileName().toString());
         if (extension != null && FileProducer.TEXT_EXTENSIONS.contains(extension)) {
             try {
-                indexQueue.put(path);
+                fileProducer.getIndexQueue().put(path);
                 log.debug("indexQueue'ya eklendi: {}", path);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -223,6 +229,15 @@ public class HotZoneWatchService {
             }
         }
     }
+    public boolean isPathAlreadyWatchedByHotZone(String absolutePath) {
+        Path targetPath = Paths.get(absolutePath).toAbsolutePath().normalize();
+        return watchKeyMap.values().stream().anyMatch(watchedDir -> {
+            Path normalizedWatched = watchedDir.toAbsolutePath().normalize();
+
+            return targetPath.equals(normalizedWatched) || targetPath.startsWith(normalizedWatched);
+        });
+    }
+
     @PreDestroy
     public void stop() {
         log.info("HotZoneWatchService durduruluyor...");

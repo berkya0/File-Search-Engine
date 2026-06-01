@@ -19,8 +19,16 @@ public class FileEntity {
 
     @Column(nullable = false, length = 1000,unique = true)
     private String path;
+    private long lastModified;
+
+    @Column(name = "is_favorite", nullable = false)
+    private boolean isFavorite = false;
 
     private String extension;
-    private long lastModified;
     private Long size;
+    private boolean isDirectory=false;
+
+    private long lastOpen=0;
+
+
 }

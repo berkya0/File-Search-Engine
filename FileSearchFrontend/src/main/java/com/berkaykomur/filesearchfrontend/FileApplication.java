@@ -24,6 +24,10 @@ public class FileApplication extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(FileApplication.class.getResource(fxmlPath));
         Scene scene = new Scene(fxmlLoader.load(), 1020, 650);
+//        var css = getClass().getResource("/styles.css");
+//        System.out.println("CSS: " + css);
+//        scene.getStylesheets().add(css.toExternalForm());
+
         stage.setScene(scene);
         stage.setTitle("Dosya Arama Gezgini");
         stage.show();

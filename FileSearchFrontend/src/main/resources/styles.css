@@ -1,0 +1,261 @@
+/* ============================================
+   MAKSİMUM OVERRIDE - TÜM DEFAULT TEMALARI EZER
+   ============================================ */
+
+/* TÜM METİN ÖĞELERİ - ZORLA BEYAZ */
+.label, .text, Label, Text,
+.button, Button, .toggle-button, ToggleButton,
+.radio-button, RadioButton, .check-box, CheckBox,
+.table-cell, .table-row-cell, .list-cell, .list-view,
+.text-field, TextField, .combo-box, ComboBox,
+.menu-item, .menu-button, .tab, .tab-label,
+.title-lg, .title-md, .subtitle,
+HBox, VBox, BorderPane, StackPane,
+ScrollPane, .scroll-pane, .viewport {
+    -fx-text-fill: #FFFFFF !important;
+    -fx-text-background-color: #FFFFFF !important;
+    -fx-prompt-text-fill: #9AA9C1 !important;
+}
+
+/* ROOT - ARKA PLAN */
+.root, .scroll-pane, .scroll-pane .viewport,
+VBox, HBox, BorderPane, StackPane {
+    -fx-background-color: #0A0E17 !important;
+}
+
+/* SIDEBAR */
+.sidebar {
+    -fx-background-color: #0F1320 !important;
+    -fx-background-radius: 0 28 28 0 !important;
+}
+
+.sidebar-btn {
+    -fx-background-color: transparent !important;
+}
+
+.sidebar-btn SVGPath {
+    -fx-fill: #B9C7D9 !important;
+}
+
+.sidebar-btn-active {
+    -fx-background-color: #6C5CE7 !important;
+    -fx-background-radius: 16 !important;
+}
+
+.sidebar-btn-active SVGPath {
+    -fx-fill: white !important;
+}
+
+/* KARTLAR */
+.card {
+    -fx-background-color: #161C27 !important;
+    -fx-background-radius: 24 !important;
+    -fx-border-color: #252C3F !important;
+    -fx-border-radius: 24 !important;
+}
+
+/* BAŞLIKLAR */
+.title-lg {
+    -fx-font-size: 26px !important;
+    -fx-font-weight: bold !important;
+    -fx-text-fill: white !important;
+}
+
+.title-md {
+    -fx-font-size: 17px !important;
+    -fx-font-weight: bold !important;
+    -fx-text-fill: #E2E8F0 !important;
+}
+
+.subtitle {
+    -fx-font-size: 13px !important;
+    -fx-text-fill: #9AA9C1 !important;
+}
+
+/* BUTONLAR */
+.btn-primary {
+    -fx-background-color: #6C5CE7 !important;
+    -fx-text-fill: white !important;
+    -fx-background-radius: 24 !important;
+    -fx-padding: 8 24 !important;
+    -fx-font-weight: bold !important;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #7C6CEF !important;
+}
+
+.btn-secondary {
+    -fx-background-color: #2D3345 !important;
+    -fx-text-fill: #E2E8F0 !important;
+    -fx-background-radius: 24 !important;
+    -fx-padding: 8 20 !important;
+}
+
+.btn-folder {
+    -fx-background-color: #6C5CE7 !important;
+    -fx-text-fill: white !important;
+    -fx-background-radius: 16 !important;
+    -fx-padding: 6 12 !important;
+}
+
+/* INPUT */
+.input-field, .search-field {
+    -fx-background-color: #111624 !important;
+    -fx-text-fill: white !important;
+    -fx-prompt-text-fill: #6B7280 !important;
+    -fx-background-radius: 20 !important;
+    -fx-border-color: #2D3345 !important;
+    -fx-border-radius: 20 !important;
+    -fx-padding: 10 16 !important;
+}
+
+/* TABLO */
+.table-view {
+    -fx-background-color: #131826 !important;
+    -fx-background-radius: 20 !important;
+    -fx-border-color: transparent !important;
+    -fx-control-inner-background: #131826 !important;
+    -fx-table-cell-border-color: transparent !important;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #1A2030 !important;
+    -fx-background-radius: 20 20 0 0 !important;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #B9C7D9 !important;
+    -fx-font-weight: bold !important;
+}
+
+.table-row-cell {
+    -fx-background-color: #131826 !important;
+    -fx-border-color: transparent !important;
+}
+
+.table-cell {
+    -fx-text-fill: #E2E8F0 !important;
+    -fx-border-color: transparent !important;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #1F2538 !important;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #252C3F !important;
+}
+
+/* LIST VIEW */
+.list-view {
+    -fx-background-color: #131826 !important;
+    -fx-background-radius: 16 !important;
+    -fx-border-color: #252C3F !important;
+    -fx-border-radius: 16 !important;
+    -fx-control-inner-background: #131826 !important;
+}
+
+.list-cell {
+    -fx-text-fill: #E2E8F0 !important;
+    -fx-background-color: #131826 !important;
+    -fx-border-color: transparent !important;
+}
+
+.list-cell:hover {
+    -fx-background-color: #1F2538 !important;
+}
+
+.list-cell:selected {
+    -fx-background-color: #252C3F !important;
+}
+
+/* TOGGLE BUTTON */
+.toggle-button {
+    -fx-background-color: #2D3345 !important;
+    -fx-text-fill: #B9C7D9 !important;
+    -fx-background-radius: 24 !important;
+    -fx-padding: 5 16 !important;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #6C5CE7 !important;
+    -fx-text-fill: white !important;
+}
+
+.toggle-button SVGPath {
+    -fx-fill: #B9C7D9 !important;
+}
+
+.toggle-button:selected SVGPath {
+    -fx-fill: white !important;
+}
+
+/* FOLDER BOX */
+.folder-box {
+    -fx-background-color: #1A2030 !important;
+    -fx-background-radius: 20 !important;
+    -fx-border-color: #2D3345 !important;
+    -fx-border-radius: 20 !important;
+    -fx-padding: 14 !important;
+}
+
+.folder-box Label {
+    -fx-text-fill: #E2E8F0 !important;
+}
+
+/* ONBOARDING */
+.onboarding-card {
+    -fx-background-color: #161C27 !important;
+    -fx-background-radius: 32 !important;
+    -fx-border-color: #252C3F !important;
+    -fx-border-radius: 32 !important;
+}
+
+.icon-circle {
+    -fx-background-color: #2D3345 !important;
+    -fx-background-radius: 24 !important;
+}
+
+.icon-circle SVGPath {
+    -fx-fill: #6C5CE7 !important;
+}
+
+/* CHECKBOX - RADIO */
+.check-box, .radio-button {
+    -fx-text-fill: #E2E8F0 !important;
+}
+
+.check-box .box, .radio-button .radio {
+    -fx-background-color: #1A2030 !important;
+    -fx-border-color: #4B5565 !important;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #6C5CE7 !important;
+    -fx-border-color: #6C5CE7 !important;
+}
+
+/* TÜM SVG'LER */
+SVGPath {
+    -fx-fill: #B9C7D9 !important;
+}
+
+/* SCROLLBAR */
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #3A4055 !important;
+    -fx-background-radius: 10 !important;
+}
+
+/* ARA ÇUBUĞU */
+.search-bar {
+    -fx-background-color: #131826 !important;
+    -fx-background-radius: 28 !important;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3) !important;
+}
+
+.filter-bar {
+    -fx-background-color: #1A2030 !important;
+    -fx-background-radius: 28 !important;
+    -fx-padding: 3 !important;
+}

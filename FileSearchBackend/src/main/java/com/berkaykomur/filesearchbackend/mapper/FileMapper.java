@@ -17,16 +17,11 @@ public class FileMapper {
         fileDto.setName(file.getName());
         fileDto.setPath(file.getPath());
         fileDto.setLastModified(file.getLastModified());
+        fileDto.setFavorite(file.isFavorite());
+        fileDto.setExtension(FileUtil.getExtension(file.getName()));
+        fileDto.setDirectory(file.isDirectory());
+        fileDto.setLastOpen(file.getLastOpen());
         return fileDto;
-    }
-    public static FileEntity toFile(FileDto fileDto) {
-        if(fileDto==null){return null;}
-        FileEntity file=new FileEntity();
-        file.setName(fileDto.getName());
-        file.setSize(fileDto.getSize());
-        file.setPath(fileDto.getPath());
-        file.setLastModified(fileDto.getLastModified());
-        return file;
     }
 
     public static FileEntity fromPathToFile(Path path, BasicFileAttributes attrs) {
@@ -34,23 +29,30 @@ public class FileMapper {
             if (path == null) return null;
 
             FileEntity fileEntity = new FileEntity();
+            if (attrs.isDirectory()) {
+                fileEntity.setDirectory(true);
+            }
             fileEntity.setPath(path.toString());
             fileEntity.setSize(attrs.size());
+
             Path fileNamePath = path.getFileName();
             if (fileNamePath != null) {
                 fileEntity.setName(fileNamePath.toString());
+                fileEntity.setExtension(FileUtil.getExtension(fileNamePath.toString()));
             } else {
                 fileEntity.setName(path.toString());
+                fileEntity.setExtension("");
             }
 
-            fileEntity.setExtension(FileUtil.getExtension(path));
             fileEntity.setLastModified(attrs.lastModifiedTime().toMillis());
-
+            fileEntity.setFavorite(false);
+            fileEntity.setLastOpen(0);
             return fileEntity;
         } catch (Exception e) {
             log.error("Dosyayı entitye çevirirken hata oluştu! Path: {}", path, e);
             return null;
         }
     }
+
 
 }

@@ -21,6 +21,8 @@ public class FileSearchService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Getter
     private final ObservableList<FileDto> masterData = FXCollections.observableArrayList();
+    @Getter
+    private long totalElements = 0;
 
     private int currentPage = 0;
     private boolean isLoading = false;
@@ -62,9 +64,11 @@ public class FileSearchService {
 
                 if (contentNode != null && contentNode.isArray()) {
                     List<FileDto> files = objectMapper.readerForListOf(FileDto.class).readValue(contentNode);
-
+                    JsonNode totalNode = rootNode.path("page").get("totalElements");
+                    long total = (totalNode != null) ? totalNode.asLong() : 0;
                     Platform.runLater(() -> {
                         masterData.addAll(files);
+                        totalElements = total;
                         log.info("Sayfa {} yüklendi, {} yeni dosya eklendi.", page, files.size());
                         isLoading = false;
                     });
@@ -82,6 +86,8 @@ public class FileSearchService {
         });
     }
 
-
+    public ObservableList<FileDto> getMasterData() {
+        return masterData;
+    }
 
 }

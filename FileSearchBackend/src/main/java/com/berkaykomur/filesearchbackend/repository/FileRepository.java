@@ -11,43 +11,60 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileEntity, Long> {
 
     @Query("SELECT f FROM FileEntity f WHERE " +
-            "(:name IS NULL OR f.name LIKE %:name%) AND " +
-            "(:extensions IS NULL OR f.extension IN :extensions)")
-    Page<FileEntity> searchFiles(@Param("name") String name,
-                                 @Param("extensions") Set<String> extensions, Pageable pageable);
-
+            "( :query IS NULL OR (LOWER(f.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(f.path) LIKE LOWER(CONCAT('%', :query, '%'))) ) " +
+            "AND ( :extensions IS NULL OR f.extension IN :extensions ) " +
+            "ORDER BY f.isFavorite DESC, f.name ASC")
+    Page<FileEntity> searchFiles(@Param("query") String query,
+                                 @Param("extensions") Set<String> extensions,
+                                 Pageable pageable);
 
     List<FileEntity> findByPathIn(List<String> paths);
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO files (name, path, size, last_modified, extension, is_deleted) " +
-            "SELECT * FROM UNNEST(:names, :paths, :sizes, :lastModifieds, :extensions, :isDeleteds) " +
+    @Query(value = "INSERT INTO files (name, path, size, last_modified, extension, is_deleted, is_favorite,is_directory,last_open) " +
+            "SELECT * FROM UNNEST(:names, :paths, :sizes, :lastModifieds, :extensions, :isDeleteds, :isFavorites, :isDirectories,:last_opens) " +
             "ON CONFLICT (path) DO UPDATE SET " +
             "name = EXCLUDED.name, " +
             "size = EXCLUDED.size, " +
             "last_modified = EXCLUDED.last_modified, " +
-            "is_deleted = false",nativeQuery = true)
+            "is_deleted = false, " +
+            "is_favorite = files.is_favorite,"+
+            "is_directory=files.is_directory,"+
+            "last_open=files.last_open",
+            nativeQuery = true)
     void upsertFilesBatch(@Param("names") String[] names,
                           @Param("paths") String[] paths,
                           @Param("sizes") Long[] sizes,
                           @Param("lastModifieds") Long[] lastModifieds,
                           @Param("extensions") String[] extensions,
-                          @Param("isDeleteds") Boolean[] isDeleteds);
+                          @Param("isDeleteds") Boolean[] isDeleteds,
+                          @Param("isFavorites") Boolean[] isFavorites,
+                          @Param("isDirectories")Boolean[]  isDirectories,
+                          @Param("last_opens") Long[] lastOpens);
 
-    @Query("SELECT f.path FROM FileEntity f WHERE f.path LIKE :zone%")
-    Set<String> findPathsByZone (@Param("zone") String zone);
+    @Query("SELECT f.path FROM FileEntity f WHERE f.path LIKE CONCAT(:zone, '%')")
+    Set<String> findPathsByZone(@Param("zone") String zone);
 
     @Transactional
     @Modifying
     @Query("DELETE FROM FileEntity f WHERE f.path IN :paths")
     void deleteAllByPathIn(@Param("paths") Set<String> paths);
+
+    Optional<FileEntity> findByPath(String path);
+
+    Set<FileEntity> findByIsDirectoryTrueAndIsFavoriteTrue();
+
+    @Query("SELECT f FROM FileEntity f WHERE f.lastOpen > 0 ORDER BY f.isFavorite DESC, f.lastOpen DESC LIMIT 10")
+    List<FileEntity> findTop10RecentFiles();
+
 
 
 }

@@ -56,7 +56,7 @@ public class OnBoardingView {
             progressFull.setVisible(true);
             progressFull.setManaged(true);
 
-            apiScanService.fullScan("C:/")
+            apiScanService.fullScan("C://")
                     .thenAccept(response -> {
                         if (response.statusCode() == 200 || response.statusCode() == 202) {
                             Platform.runLater(this::openMainScreen);

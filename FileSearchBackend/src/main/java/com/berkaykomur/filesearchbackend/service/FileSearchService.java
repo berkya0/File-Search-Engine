@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Set;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -22,18 +25,19 @@ public class FileSearchService {
     public Page<FileDto> searchFiles(SearchRequest searchRequest) {
         log.info("Dosya arama işlemi başlatıldı: [Kelime: {}, Kategoriler: {}]",
                 searchRequest.getFileName(), searchRequest.getExtensions());
-
-        Pageable pageable = PageRequest.of(searchRequest.getPage(),25,
-                Sort.by("name").ascending());
-
+        Pageable pageable = PageRequest.of(searchRequest.getPage(), 25, Sort.unsorted());
+        Set<String> safeExtensions = (searchRequest.getExtensions() == null || searchRequest.getExtensions().isEmpty())
+                ? null
+                : searchRequest.getExtensions();
         long start = System.currentTimeMillis();
-        Page<FileDto> results=fileRepository.searchFiles
-                        (searchRequest.getFileName(),searchRequest.getExtensions(),pageable)
+        Page<FileDto> results = fileRepository.searchFiles(searchRequest.getFileName(), safeExtensions, pageable)
                 .map(FileMapper::toDTO);
         long executionTime = System.currentTimeMillis() - start;
+
         log.info("Arama başarılı. Sayfa: {}, Toplam Sonuç: {}, Süre: {}ms",
                 searchRequest.getPage(), results.getTotalElements(), executionTime);
 
         return results;
     }
+
 }
