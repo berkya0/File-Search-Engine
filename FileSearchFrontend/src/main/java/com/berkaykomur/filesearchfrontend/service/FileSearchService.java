@@ -28,6 +28,7 @@ public class FileSearchService {
     private boolean isLoading = false;
     private String lastQuery = "";
     private boolean searchInContentMode = false;
+    private CompletableFuture<String> activeFuture;
 
     public void setSearchMode(boolean inContent) {
         this.searchInContentMode = inContent;
@@ -48,39 +49,51 @@ public class FileSearchService {
         loadPage(lastQuery,extensions, currentPage);
     }
 
-    private void loadPage(String query,Set<String> extensions, int page) throws JsonProcessingException {
-        isLoading = true;
-        CompletableFuture<String> future;
-        if (searchInContentMode) {
-            future = apiService.searchInContent(query, page);
-        } else {
+    private void loadPage(String query, Set<String> extensions, int page) throws JsonProcessingException {
 
-            future = apiService.searchFiles(query, extensions, page);
+        if (activeFuture != null && !activeFuture.isDone()) {
+            activeFuture.cancel(true);
         }
-        future.thenAccept(jsonResponse -> {
+
+        isLoading = true;
+
+        if (searchInContentMode) {
+            activeFuture = apiService.searchInContent(query, page);
+        } else {
+            activeFuture = apiService.searchFiles(query, extensions, page);
+        }
+
+        activeFuture.thenAccept(jsonResponse -> {
+            if (Thread.currentThread().isInterrupted()) return;
+
             try {
                 JsonNode rootNode = objectMapper.readTree(jsonResponse);
                 JsonNode contentNode = rootNode.get("content");
 
                 if (contentNode != null && contentNode.isArray()) {
                     List<FileDto> files = objectMapper.readerForListOf(FileDto.class).readValue(contentNode);
-                    JsonNode totalNode = rootNode.path("page").get("totalElements");
-                    long total = (totalNode != null) ? totalNode.asLong() : 0;
+                    long total = rootNode.path("page").path("totalElements").asLong(0);
+
                     Platform.runLater(() -> {
+                        // Sayfa 0 ise temizle, değilse üstüne ekle (Infinite scroll mantığı)
+                        if (page == 0) masterData.clear();
                         masterData.addAll(files);
                         totalElements = total;
-                        log.info("Sayfa {} yüklendi, {} yeni dosya eklendi.", page, files.size());
                         isLoading = false;
+                        log.info("Sayfa {} yüklendi, toplam {}.", page, files.size());
                     });
                 } else {
                     isLoading = false;
                 }
             } catch (Exception e) {
-                log.error("Hata: {}", e.getMessage());
+                log.error("JSON işleme hatası: {}", e.getMessage());
                 isLoading = false;
             }
         }).exceptionally(ex -> {
-            log.error("API Hatası: {}", ex.getMessage());
+           
+            if (!(ex instanceof java.util.concurrent.CancellationException)) {
+                log.error("API Hatası: {}", ex.getMessage());
+            }
             isLoading = false;
             return null;
         });
