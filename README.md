@@ -5,7 +5,6 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-LTS-blue)
 ![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
@@ -28,15 +27,15 @@
 
 Bu proje, yerel disk üzerindeki **milyonlarca dosya** arasında **milisaniye seviyesinde** arama yapabilen yüksek performanslı bir masaüstü arama motoru uygulamasıdır.
 
-**Windows/Linux/macOS** işletim sistemlerinin yerleşik arama servislerine alternatif olarak, daha hızlı, özelleştirilebilir ve verimli sonuçlar sunmayı hedeflemektedir.
+İşletim sistemlerinin yerleşik arama servislerine alternatif olarak, daha hızlı, özelleştirilebilir ve verimli sonuçlar sunmayı hedeflemektedir.
 
 ### Mühendislik Yaklaşımları
 
 - **🔄 Inverted Index Yapısı:** Apache Lucene tabanlı tam metin arama indeksleri ile kelime tabanlı aramaları optimize etme
 - **⚙️ Multi-threading (Çoklu İş Parçacığı):** Milyonlarca dosyayı paralel olarak tarayarak CPU verimini maksimize etme
 - **🏗️ Decoupled Architecture:** Backend (Spring Boot REST API) ve Frontend (JavaFX GUI) bağımsız modüler yapı
-- **📊 Veritabanı Optimizasyonu:** PostgreSQL indekslemesi ile O(log n) arama karmaşıklığı
-- **⏱️ Real-time Delta Scan:** Değişen dosyaları tespit etme ve indeks güncelleme
+- **📊 Veritabanı Optimizasyonu:** PostgreSQL indekslemesi ile arama karmaşıklığı
+- **⏱️ Real-time Watch Service:** Değişen dosyaları tespit etme ve indeks güncelleme
 
 ---
 
@@ -54,7 +53,7 @@ Bu proje, yerel disk üzerindeki **milyonlarca dosya** arasında **milisaniye se
 
 ### Backend (Spring Boot)
 ✅ REST API ile Frontend iletişimi  
-✅ **Apache Lucene 9.9.1** kullanarak tam metin indeksleme  
+✅ **Apache Lucene** kullanarak tam metin indeksleme  
 ✅ PostgreSQL veritabanı entegrasyonu  
 ✅ Çoklu thread worker yapısı:
   - **3 Database Worker Thread:** Batch içinde veritabanı işlemleri (1000 dosya/batch)
@@ -66,15 +65,19 @@ Bu proje, yerel disk üzerindeki **milyonlarca dosya** arasında **milisaniye se
 
 ---
 
+
+
+---
+
 ## 📊 İlerleme & Performans Metrikleri
 
 | Metrik | Değer |
 |--------|-------|
-| Tarama Edilen Dosya Sayısı | 1,300,000+ |
+| Tarama Edilen Dosya Sayısı | 1,100,000+ |
 | Toplam Tarama Süresi | ~6 dakika |
 | Veritabanı Yazma Performance | Batch 1000/işlem |
-| Arama Yanıt Süresi (Dosya Adı) | <100ms |
-| Arama Yanıt Süresi (Metin İçeriği) | <200ms |
+| Arama Yanıt Süresi (Dosya Adı) | 100ms-150ms |
+| Arama Yanıt Süresi (Metin İçeriği) | <100ms |
 | Veritabanı Engine | PostgreSQL |
 | Thread Worker Sayısı | 8 (3 DB + 5 Index) |
 | Desteklenen Metin Dosyaları | .txt, .java, .log, .md |
@@ -99,7 +102,7 @@ Java 17
 │   ├── Spring Data JPA
 │   ├── Spring Web MVC
 │   └── Spring Data Web Support
-├── Apache Lucene 9.9.1
+├── Apache Lucene
 │   ├── lucene-core
 │   ├── lucene-analysis-common
 │   └── lucene-queryparser
@@ -149,7 +152,9 @@ File-Search-Engine/
 │   │       │   ├── LuceneIndexService        # Lucene indeksleme
 │   │       │   ├── DeltaScanService         # Değişim taraması
 │   │       │   ├── HotZoneWatchService      # Real-time izleme
-│   │       │   └── ...
+│   │       │   └── HotZoneWatchService      # Real-time izleme
+│   │       │   └── HotZoneWatchService      # Real-time izleme
+│   │       │   └── 
 │   │       ├── worker/         # Multi-threading workers
 │   │       │   ├── FileProducer             # Dosya tarayıcı
 │   │       │   ├── DatabaseWorker           # DB işlem worker
@@ -336,24 +341,15 @@ GET /api/scan/last-scan-time
 - [x] WatchService real-time izleme
 - [x] Delta scan implementasyonu
 - [x] Favoriler sistemi
+- [x] Arama geçmişi
 
 ### Devam Eden Görevler 🔄
-- [ ] Gelişmiş filtreleme (dosya boyutu, tarih aralığı, vb.)
 - [ ] Global exception handling iyileştirmesi
 - [ ] Veritabanı query optimization
 - [ ] Lucene query syntax desteği
 
 ### Planlanan Özellikler 📋
-- [ ] Dosya ön izlemesi (image thumbnails, text preview)
 - [ ] Tarama planlaması (scheduled scans)
-- [ ] Kullanıcı tercihleri (özel klasörler, hariç tutma listesi)
-- [ ] Arama geçmişi ve sık aramanlar
-- [ ] Dark mode / Light mode
-- [ ] Çoklu dil desteği
-- [ ] Taramanın duraklatılması/devam ettirilmesi
-- [ ] Linux/macOS uyumluluğu optimizasyonu
-- [ ] Ağ tabanlı arama (network drive support)
-- [ ] Sistem tray entegrasyonu
 
 ---
 
@@ -420,12 +416,6 @@ Katkıda bulunmak için:
 
 ---
 
-## 📄 Lisans
-
-Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
-
----
-
 ## 👨‍💻 Hakkında
 
 **Geliştirici:** Berkay Kömür  
@@ -451,7 +441,6 @@ Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
 - **Depo Boyutu:** ~293 KB
 - **Oluşturulma Tarihi:** 34 gün önce
 - **Son Güncelleme:** 13 saat önce
-- **Lisans:** MIT
 
 ---
 
