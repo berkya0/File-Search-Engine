@@ -64,6 +64,25 @@ Bu proje, yerel disk üzerindeki **milyonlarca dosya** arasında **milisaniye se
 ✅ Hata yönetimi ve loglama (SLF4J)  
 
 ---
+## 🖼️ Arayüz Görüntüleri
+
+Projenin JavaFX ile geliştirilen modern ve akıcı arayüzünden bazı görünümler:
+
+| Başlangıç Ekranı | Ana Arama Paneli |
+| :--- | :--- |
+| <img src="asserts/onboarding.png" width="400"> | <img src="asserts/main.png" width="400"> |
+
+| Genel Bakış | Lucene Arama Sonuçları |
+| :--- | :--- |
+| <img src="asserts/main2.png" width="400"> | <img src="asserts/luceneSearchExample.png" width="400"> |
+
+| Ayarlar Paneli | Klasör İzleme Uyarısı |
+| :--- | :--- |
+| <img src="asserts/settings.png" width="400"> | <img src="asserts/settingsAlreadyWatched.png" width="400"> |
+
+| Kök Dizin Uyarı Mesajı |
+| :--- |
+| <img src="asserts/settingsRootWarn.png" width="400"> |
 
 
 
@@ -149,12 +168,11 @@ File-Search-Engine/
 │   │   └── com/berkaykomur/filesearchbackend/
 │   │       ├── controller/     # REST API endpoints
 │   │       ├── service/        # Business logic
-│   │       │   ├── LuceneIndexService        # Lucene indeksleme
-│   │       │   ├── DeltaScanService         # Değişim taraması
-│   │       │   ├── HotZoneWatchService      # Real-time izleme
+│   │       │   ├── DeltaScanService        # Değişim taraması
+│   │       │   ├── LuceneIndexService   #Lucene indexleme
 │   │       │   └── HotZoneWatchService      # Real-time izleme
 │   │       │   └── HotZoneWatchService      # Real-time izleme
-│   │       │   └── 
+│   │       │   └── ...
 │   │       ├── worker/         # Multi-threading workers
 │   │       │   ├── FileProducer             # Dosya tarayıcı
 │   │       │   ├── DatabaseWorker           # DB işlem worker
