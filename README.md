@@ -1,6 +1,5 @@
 # 🔍 Desktop File Search Engine
 
-![Status](https://img.shields.io/badge/Status-Geliştirme_Aşamasında-yellow)
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-LTS-blue)
@@ -84,10 +83,19 @@ Projenin JavaFX ile geliştirilen modern ve akıcı arayüzünden bazı görün�
 | :--- |
 | <img src="asserts/settingsRootWarn.png" width="400"> |
 
+---
+### 🖥️ Demo & Nasıl Çalışır?
 
+Aşağıdaki açılır menüden demo videomuzu izleyebilirsiniz:
+
+<details>
+<summary>🎬 <b>Uygulama Demosunu Göster / Gizle</b></summary>
+<br>
+
+<video src="https://github.com/user-attachments/assets/84dc39ea-753f-4eb3-bfc9-091691e9d450" controls muted width="100%"></video>
+</details>
 
 ---
-
 ## 📊 İlerleme & Performans Metrikleri
 
 | Metrik | Değer |
@@ -170,7 +178,6 @@ File-Search-Engine/
 │   │       ├── service/        # Business logic
 │   │       │   ├── DeltaScanService        # Değişim taraması
 │   │       │   ├── LuceneIndexService   #Lucene indexleme
-│   │       │   └── HotZoneWatchService      # Real-time izleme
 │   │       │   └── HotZoneWatchService      # Real-time izleme
 │   │       │   └── ...
 │   │       ├── worker/         # Multi-threading workers
@@ -361,16 +368,7 @@ GET /api/scan/last-scan-time
 - [x] Favoriler sistemi
 - [x] Arama geçmişi
 
-### Devam Eden Görevler 🔄
-- [ ] Global exception handling iyileştirmesi
-- [ ] Veritabanı query optimization
-- [ ] Lucene query syntax desteği
-
-### Planlanan Özellikler 📋
-- [ ] Tarama planlaması (scheduled scans)
-
 ---
-
 ## 🚀 Performans Optimizasyonları
 
 ### Database
@@ -396,42 +394,6 @@ Performans koruması için şu klasörler otomatik atlanıyor:
 - `target/` (maven build)
 - `build/` (gradle build)
 - `AppData/` (system data)
-
----
-
-## 🐛 Sorun Giderme
-
-### Problem: Backend bağlantısı başarısız
-```
-Çözüm: PostgreSQL'in çalıştığından emin olun
-$ psql -U postgres -d filesearch
-```
-
-### Problem: Frontend başlamıyor
-```
-Çözüm: JavaFX çalışanının yüklü olduğundan emin olun
-$ mvn javafx:run
-```
-
-### Problem: Arama yavaş
-```
-Çözüm: Veritabanı indekslerini kontrol edin
-SELECT * FROM pg_stat_user_indexes;
-```
-
----
-
-## 📝 Katkı
-
-Katkılar açık ve hoşlanıyor! 🎉
-
-Katkıda bulunmak için:
-1. Fork yapın
-2. Feature branch oluşturun (`git checkout -b feature/AmazingFeature`)
-3. Değişiklikleri commit edin (`git commit -m 'Add some AmazingFeature'`)
-4. Branch'e push yapın (`git push origin feature/AmazingFeature`)
-5. Pull Request açın
-
 ---
 
 ## 👨‍💻 Hakkında
@@ -443,23 +405,3 @@ Katkıda bulunmak için:
 - GitHub: [@berkya0](https://github.com/berkya0)
 
 ---
-
-## 🙏 Teşekkürler
-
-- **Apache Lucene** - Güçlü arama kütüphanesi
-- **Spring Boot** - Backend framework
-- **JavaFX** - UI framework
-- **PostgreSQL** - Güvenilir veritabanı
-
----
-
-## 📊 Proje İstatistikleri
-
-- **Kod Dili:** Java (95.4%), CSS (4.6%)
-- **Depo Boyutu:** ~293 KB
-- **Oluşturulma Tarihi:** 34 gün önce
-- **Son Güncelleme:** 13 saat önce
-
----
-
-**Son Güncelleme:** 2026-06-02 ⭐ Projeyi beğendiyseniz star atabilirsiniz!
