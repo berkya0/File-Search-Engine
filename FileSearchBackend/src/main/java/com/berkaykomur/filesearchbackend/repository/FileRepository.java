@@ -18,12 +18,20 @@ import java.util.Set;
 public interface FileRepository extends JpaRepository<FileEntity, Long> {
 
     @Query("SELECT f FROM FileEntity f WHERE " +
-            "( :query IS NULL OR (LOWER(f.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(f.path) LIKE LOWER(CONCAT('%', :query, '%'))) ) " +
+            "( :query IS NULL OR (f.name LIKE CONCAT('%', :query, '%') OR f.path LIKE CONCAT('%', :query, '%')) ) " +
             "AND ( :extensions IS NULL OR f.extension IN :extensions ) " +
-            "ORDER BY f.isFavorite DESC, f.name ASC")
+            "ORDER BY " +
+            "CASE WHEN (f.name LIKE CONCAT('%', :query, '%')) THEN 0 ELSE 1 END ASC, " +
+            "f.isFavorite DESC, " +
+            "f.name ASC")
     Page<FileEntity> searchFiles(@Param("query") String query,
                                  @Param("extensions") Set<String> extensions,
                                  Pageable pageable);
+
+    @Query("SELECT f FROM FileEntity f WHERE (:extensions IS NULL OR f.extension IN :extensions) " +
+            "ORDER BY f.isFavorite DESC, f.name ASC")
+    Page<FileEntity> findAllFiles(@Param("extensions") Set<String> extensions, Pageable pageable);
+
 
     List<FileEntity> findByPathIn(List<String> paths);
 

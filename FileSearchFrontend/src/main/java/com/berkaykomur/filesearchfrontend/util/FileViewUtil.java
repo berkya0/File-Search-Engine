@@ -5,10 +5,10 @@ import com.berkaykomur.filesearchfrontend.service.FileSearchService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.shape.SVGPath;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
@@ -16,8 +16,6 @@ import java.util.function.Supplier;
 
 @Slf4j
 public class FileViewUtil {
-
-
 
     public static void setupTableColumns(
             TableColumn<FileDto, String> colFileName,

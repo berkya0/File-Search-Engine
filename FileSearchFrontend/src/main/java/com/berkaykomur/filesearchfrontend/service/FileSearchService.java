@@ -51,11 +51,13 @@ public class FileSearchService {
 
     private void loadPage(String query, Set<String> extensions, int page) throws JsonProcessingException {
 
+
         if (activeFuture != null && !activeFuture.isDone()) {
             activeFuture.cancel(true);
         }
 
         isLoading = true;
+        long startTime = System.currentTimeMillis();
 
         if (searchInContentMode) {
             activeFuture = apiService.searchInContent(query, page);
@@ -64,6 +66,10 @@ public class FileSearchService {
         }
 
         activeFuture.thenAccept(jsonResponse -> {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+
+            log.info("API Yanıt Süresi: {} ms", duration);
             if (Thread.currentThread().isInterrupted()) return;
 
             try {
@@ -90,7 +96,7 @@ public class FileSearchService {
                 isLoading = false;
             }
         }).exceptionally(ex -> {
-           
+
             if (!(ex instanceof java.util.concurrent.CancellationException)) {
                 log.error("API Hatası: {}", ex.getMessage());
             }

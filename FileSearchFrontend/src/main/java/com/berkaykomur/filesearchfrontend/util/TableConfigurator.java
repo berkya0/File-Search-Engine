@@ -22,7 +22,6 @@ public class TableConfigurator {
                     setText(null);
                 } else {
                     FileDto file = getTableView().getItems().get(getIndex());
-                    log.info("Dosya Adı: {}, Uzantısı: {}", file.getName(), file.getExtension());
 
                     setGraphic(IconProvider.getIconForExtension(file));
                     setText(" " + fileName);

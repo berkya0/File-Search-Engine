@@ -88,7 +88,6 @@ public class HotZoneWatchService {
                         || folderName.equals("build")
                         || folderName.equals("appdata")) {
 
-                    log.info("Performans Koruması: '{}' klasörü hiyerarşiden atlandı.", dir);
                     return FileVisitResult.SKIP_SUBTREE;
                 }
                 registerDirectory(dir);

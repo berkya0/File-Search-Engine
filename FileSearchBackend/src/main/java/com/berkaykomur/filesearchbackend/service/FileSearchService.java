@@ -25,13 +25,20 @@ public class FileSearchService {
     public Page<FileDto> searchFiles(SearchRequest searchRequest) {
         log.info("Dosya arama işlemi başlatıldı: [Kelime: {}, Kategoriler: {}]",
                 searchRequest.getFileName(), searchRequest.getExtensions());
-        Pageable pageable = PageRequest.of(searchRequest.getPage(), 25, Sort.unsorted());
+        Pageable pageable = PageRequest.of(searchRequest.getPage(), 25);
         Set<String> safeExtensions = (searchRequest.getExtensions() == null || searchRequest.getExtensions().isEmpty())
                 ? null
                 : searchRequest.getExtensions();
         long start = System.currentTimeMillis();
-        Page<FileDto> results = fileRepository.searchFiles(searchRequest.getFileName(), safeExtensions, pageable)
-                .map(FileMapper::toDTO);
+        Page<FileDto> results;
+        if(searchRequest.getFileName() == null || searchRequest.getFileName().isBlank()) {
+            results= fileRepository.findAllFiles(safeExtensions, pageable)
+                    .map(FileMapper::toDTO);
+        }else {
+            results= fileRepository.searchFiles(searchRequest.getFileName(), safeExtensions, pageable)
+                    .map(FileMapper::toDTO);
+        }
+
         long executionTime = System.currentTimeMillis() - start;
 
         log.info("Arama başarılı. Sayfa: {}, Toplam Sonuç: {}, Süre: {}ms",

@@ -37,10 +37,10 @@ public class FileMapper {
 
             Path fileNamePath = path.getFileName();
             if (fileNamePath != null) {
-                fileEntity.setName(fileNamePath.toString());
+                fileEntity.setName(fileNamePath.toString().toLowerCase());
                 fileEntity.setExtension(FileUtil.getExtension(fileNamePath.toString()));
             } else {
-                fileEntity.setName(path.toString());
+                fileEntity.setName(path.toString().toLowerCase());
                 fileEntity.setExtension("");
             }
 

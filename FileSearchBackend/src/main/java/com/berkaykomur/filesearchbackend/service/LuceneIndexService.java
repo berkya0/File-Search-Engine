@@ -29,8 +29,6 @@ public class LuceneIndexService {
     private final Directory directory;
     private final IndexWriter writer;
     private final SearcherManager searcherManager;
-    public void updateIndexPath(String indexPath) throws IOException {
-    }
 
     public void buildIndex(List<String> filePaths) {
         for (String filePath : filePaths) {
@@ -44,7 +42,7 @@ public class LuceneIndexService {
                 String content = Files.readString(path, StandardCharsets.UTF_8);
                 Document document = new Document();
                 document.add(new StringField("path", filePath, Field.Store.YES));
-                document.add(new TextField("content", content, Field.Store.NO));
+                document.add(new TextField("content", content, Field.Store.YES));
                 writer.updateDocument(new Term("path", filePath), document);
 
             } catch (IOException e) {
@@ -64,7 +62,7 @@ public class LuceneIndexService {
         try {
             writer.commit();
             searcherManager.maybeRefresh();
-            log.info("İndeksler tek seferde kaydedildi ve tazelendi.");
+          //  log.info("İndeksler tek seferde kaydedildi ve tazelendi.");
         } catch (IOException e) {
             log.error("Final commit hatası!", e);
         }

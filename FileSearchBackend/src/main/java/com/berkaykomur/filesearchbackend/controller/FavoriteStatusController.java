@@ -29,7 +29,7 @@ public class FavoriteStatusController {
     @GetMapping("/favorite/directories")
     public ResponseEntity<Set<FileDto>> favoriteDirectories(){
         Set<FileDto> favFolders=favoriteStatusService.favoriteDirectories();
-        log.info("Favori klasörleri listeleme isteği başarıyla yanıtlandı.");
+        //log.info("Favori klasörleri listeleme isteği başarıyla yanıtlandı.");
         return ResponseEntity.ok(favFolders);
     }
 

@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,30 +55,39 @@ public class DatabaseWorker {
         }
     }
 
-   private void saveInBatch(List<FileEntity> list,boolean isDeltaScan) {
-       if (list.isEmpty()) return;
-       try {
-           if(!isDeltaScan){
-               fileRepository.saveAll(list);
-               fileRepository.flush();
-           }
-           else{
-               String[] names = list.stream().map(FileEntity::getName).toArray(String[]::new);
-               String[] paths = list.stream().map(FileEntity::getPath).toArray(String[]::new);
-               Long[] sizes = list.stream().map(FileEntity::getSize).toArray(Long[]::new);
-               Long[] dates = list.stream().map(FileEntity::getLastModified).toArray(Long[]::new);
-               String[] exts = list.stream().map(FileEntity::getExtension).toArray(String[]::new);
-               Boolean[] deleted = new Boolean[list.size()]; Arrays.fill(deleted, false);
-               Boolean[] favorited=new Boolean[list.size()]; Arrays.fill(favorited, false);
-               Boolean[] directory=new Boolean[list.size()]; Arrays.fill(directory, false);
-               Long[] lastOpens = new Long[list.size()];
-               Arrays.fill(lastOpens, 0L);
-               fileRepository.upsertFilesBatch(names, paths, sizes, dates, exts, deleted,favorited,directory,lastOpens);
-           }
+    private void saveInBatch(List<FileEntity> list, boolean isDeltaScan) {
+        if (list.isEmpty()) return;
+        try {
+            if (!isDeltaScan) {
+                fileRepository.saveAll(list);
+                fileRepository.flush();
+            } else {
 
-       } finally {
-           list.clear();
-       }
-   }
+                Collection<FileEntity> uniqueFiles = list.stream()
+                        .collect(Collectors.toMap(
+                                FileEntity::getPath,
+                                file -> file,
+                                (existing, replacement) -> replacement
+                        ))
+                        .values();
+
+                String[] names = uniqueFiles.stream().map(FileEntity::getName).toArray(String[]::new);
+                String[] paths = uniqueFiles.stream().map(FileEntity::getPath).toArray(String[]::new);
+                Long[] sizes = uniqueFiles.stream().map(FileEntity::getSize).toArray(Long[]::new);
+                Long[] dates = uniqueFiles.stream().map(FileEntity::getLastModified).toArray(Long[]::new);
+                String[] exts = uniqueFiles.stream().map(FileEntity::getExtension).toArray(String[]::new);
+
+                int uniqueSize = uniqueFiles.size();
+                Boolean[] deleted = new Boolean[uniqueSize]; Arrays.fill(deleted, false);
+                Boolean[] favorited = new Boolean[uniqueSize]; Arrays.fill(favorited, false);
+                Boolean[] directory = new Boolean[uniqueSize]; Arrays.fill(directory, false);
+                Long[] lastOpens = new Long[uniqueSize]; Arrays.fill(lastOpens, 0L);
+
+                fileRepository.upsertFilesBatch(names, paths, sizes, dates, exts, deleted, favorited, directory, lastOpens);
+            }
+        } finally {
+            list.clear();
+        }
+    }
 
 }

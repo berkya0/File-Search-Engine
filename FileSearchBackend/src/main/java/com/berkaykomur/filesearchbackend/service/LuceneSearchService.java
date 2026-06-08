@@ -33,9 +33,13 @@ public class LuceneSearchService {
     private final SearcherManager searcherManager;
 
     public Page<FileDto> luceneSearch(String query, int page) {
-
+        if(query == null || query.isEmpty()){
+            log.warn("Sorgu girilmemiş boş liste dönderildi");
+            return Page.empty();
+        }
         long startTime = System.currentTimeMillis();
         List<String> paths = luceneResults(query, 500);
+
         int pageSize = 25;
         int start = page * pageSize;
         int end = Math.min(start + pageSize, paths.size());
@@ -45,8 +49,7 @@ public class LuceneSearchService {
             return Page.empty();
         }
         List<String> pagePaths = paths.subList(start, end);
-        List<FileEntity> entities =
-                fileRepository.findByPathIn(pagePaths);
+        List<FileEntity> entities = fileRepository.findByPathIn(pagePaths);
 
         Map<String, FileEntity> map =
                 entities.stream()
@@ -60,6 +63,7 @@ public class LuceneSearchService {
                 .filter(Objects::nonNull)
                 .map(FileMapper::toDTO)
                 .toList();
+
         log.info("Lucene araması tamamlandı. Toplam sonuç: {}, Toplam süre: {} ", ordered.size(),System.currentTimeMillis()-startTime);
         Pageable pageable = PageRequest.of(page, pageSize);
         return new PageImpl<>(ordered, pageable, paths.size());

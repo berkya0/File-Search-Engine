@@ -19,15 +19,13 @@ public class SearchManager {
     }
 
     public void triggerSearch(String searchTerm, Set<String> extensions) {
-        // Debounce süresi dolmadan önce her yeni tuşta süreyi sıfırlıyoruz (playFromStart)
         searchDebounce.playFromStart();
-
         searchDebounce.setOnFinished(event -> {
             try {
-                String term = searchTerm.trim().toLowerCase();
-                // 3 karakter şartı veya boşsa (yani tümünü listele)
+                String term = searchTerm.trim();
+
                 if (term.length() >= 3 || term.isEmpty()) {
-                    // Servise "yeni bir arama başladığını" bildir
+
                     fileSearchService.startNewSearch(term, extensions);
                 }
             } catch (JsonProcessingException e) {

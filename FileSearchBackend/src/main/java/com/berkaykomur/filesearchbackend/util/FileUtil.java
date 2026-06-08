@@ -7,7 +7,7 @@ public class FileUtil {
         if (fileName == null) return null;
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            return fileName.substring(dotIndex + 1);
+            return fileName.substring(dotIndex + 1).toLowerCase();
         }
         return null;
     }
