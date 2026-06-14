@@ -3,7 +3,6 @@
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.x-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-LTS-blue)
-![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue)
 
 ---
 
@@ -119,46 +118,6 @@ Aşağıdaki açılır menüden demo videomuzu izleyebilirsiniz:
 - ✅ Delta scan implementasyonu
 
 ---
-
-## 🛠️ Teknoloji Yığını
-
-### Backend
-```
-Java 17
-├── Spring Boot 4.0.5
-│   ├── Spring Data JPA
-│   ├── Spring Web MVC
-│   └── Spring Data Web Support
-├── Apache Lucene
-│   ├── lucene-core
-│   ├── lucene-analysis-common
-│   └── lucene-queryparser
-├── PostgreSQL (JDBC Driver)
-└── Logging
-    ├── SLF4J
-    └── Lombok
-```
-
-### Frontend
-```
-Java 17
-├── JavaFX 17.0.14
-│   ├── JavaFX Controls
-│   ├── JavaFX FXML
-│   └── JavaFX Graphics
-├── Jackson (JSON Processing)
-│   ├── jackson-databind
-│   └── jackson-datatype-jsr310
-├── UI Libraries
-│   ├── ControlsFX 11.2.1
-│   ├── Ikonli JavaFX 12.3.1
-│   └── BootstrapFX 0.4.0
-├── System Integration
-│   └── JNA Platform 5.13.0
-└── Logging
-    ├── SLF4J Simple
-    └── Lombok
-```
 
 ### Build & Tools
 - **Maven** (Proje yönetimi)
