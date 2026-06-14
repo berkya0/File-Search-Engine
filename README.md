@@ -344,7 +344,6 @@ GET /api/scan/last-scan-time
 ### Frontend
 - **Infinite Scrolling:** Bellek verimliliği için sayfalama
 - **Lazy Loading:** Ekranda görünen veriler yükleniyor
-- **Caching:** Son arama sonuçları cache'de tutulur
 
 ### Exclusions
 Performans koruması için şu klasörler otomatik atlanıyor:
