@@ -21,10 +21,6 @@ public class FileSearchController {
 
     @PostMapping
     public ResponseEntity<Page<FileDto>> fileSearch(@RequestBody SearchRequest request) {
-        log.info("Arama isteği alındı -> Filtre: [Ad: '{}', Uzantılar: {}, Sayfa: {}]",
-                request.getFileName(),
-                request.getExtensions(),
-                request.getPage());
 
         Page<FileDto> result = fileSearchService.searchFiles(request);
         log.info("Arama isteği başarıyla yanıtlandı. Toplam bulunan kayıt: {}", result.getTotalElements());

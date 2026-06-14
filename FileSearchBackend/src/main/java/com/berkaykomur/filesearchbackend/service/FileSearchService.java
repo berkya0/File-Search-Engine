@@ -24,7 +24,8 @@ public class FileSearchService {
 
     public Page<FileDto> searchFiles(SearchRequest searchRequest) {
         log.info("Dosya arama işlemi başlatıldı: [Kelime: {}, Kategoriler: {}]",
-                searchRequest.getFileName(), searchRequest.getExtensions());
+                searchRequest.getFileName(),
+                (searchRequest.getExtensions() == null || searchRequest.getExtensions().isEmpty()) ? "Tüm Kategoriler" : searchRequest.getExtensions());
         Pageable pageable = PageRequest.of(searchRequest.getPage(), 25);
         Set<String> safeExtensions = (searchRequest.getExtensions() == null || searchRequest.getExtensions().isEmpty())
                 ? null
